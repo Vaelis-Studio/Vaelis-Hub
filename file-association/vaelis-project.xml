@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-vaelis-project">
+    <comment>Vaelis Project</comment>
+    <sub-class-of type="application/zip"/>
+    <glob pattern="*.vs"/>
+    <icon name="application-x-vaelis-project"/>
+    <generic-icon name="application-x-vaelis-project"/>
+  </mime-type>
+</mime-info>
