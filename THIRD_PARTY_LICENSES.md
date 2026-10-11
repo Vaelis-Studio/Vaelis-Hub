@@ -23,7 +23,7 @@ the exact text yourself:
 
 1. **UPNG.js** —
 2. MIT License
-
+```
 Copyright (c) 2017 Photopea
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -43,6 +43,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
 
 3. **Fonts** — add the `OFL.txt` files shipped with Inter and JetBrains Mono
    next to the font files (`css/fonts/`). The OFL requires its text to
