@@ -3,7 +3,7 @@
  * Tiny DOM helpers used across components to avoid repeating
  * createElement boilerplate. No framework — vanilla DOM only.
  */
-window.VaelisDom = {
+window.RealotDom = {
     /**
      * Create an element with attributes and children.
      * @param {string} tag

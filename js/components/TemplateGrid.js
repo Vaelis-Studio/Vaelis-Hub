@@ -2,12 +2,12 @@
  * TemplateGrid.js
  * Selectable grid of starter templates, used inside NewProjectModal.
  */
-window.VaelisTemplateGrid = {
+window.RealotTemplateGrid = {
     render() {
-        const { el } = window.VaelisDom;
-        const state = window.VaelisStore.getState();
+        const { el } = window.RealotDom;
+        const state = window.RealotStore.getState();
 
-        const cards = window.VaelisTemplates.map(tpl => {
+        const cards = window.RealotTemplates.map(tpl => {
             const selected = state.selectedTemplateId === tpl.id;
             // Templates with a bundled banner thumbnail (see templates.js's
             // `thumbnail` field, e.g. Platformer Kit) show that image
@@ -25,7 +25,7 @@ window.VaelisTemplateGrid = {
                 role: 'button',
                 tabindex: '0',
                 'aria-pressed': selected ? 'true' : 'false',
-                onClick: () => window.VaelisStore.selectTemplate(tpl.id)
+                onClick: () => window.RealotStore.selectTemplate(tpl.id)
             }, [
                 el('div', { class: 'tpl-check' }, [el('span', { html: '<svg data-lucide="check"></svg>' })]),
                 media,

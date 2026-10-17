@@ -9,7 +9,7 @@
 // someone who prefers a big viewport shouldn't have to re-hide panels
 // every time they open the editor.
 
-const STORAGE_KEY = "vaelis.panelVisibility";
+const STORAGE_KEY = "realot.panelVisibility";
 
 // Panel ids used by the Window menu, editorState.panelVisible and main.js.
 //   hierarchy -> left column  (.col-hierarchy)

@@ -4,4 +4,4 @@
  * localStorage by the store (see data/store.js); this seed is only used
  * the first time, before any project has been created.
  */
-window.VaelisSeedProjects = [];
+window.RealotSeedProjects = [];

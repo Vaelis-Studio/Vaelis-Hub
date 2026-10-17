@@ -51,11 +51,13 @@
         });
     }
 
-    window.VaelisPWA = {
+    window.RealotPWA = {
         getState() { return state; },
         subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
         /** True when there's a real, currently-valid prompt to show. */
         canInstall() { return !state.installed && !!state.deferredPrompt; },
+        /** Show the button whenever the app isn't already installed (uses manual help if no native prompt). */
+        canOfferInstall() { return !state.installed; },
         /**
          * Shows the browser's native install prompt. Must be called
          * directly from a user gesture (click) — the captured event can
@@ -63,7 +65,17 @@
          */
         async promptInstall() {
             const promptEvent = state.deferredPrompt;
-            if (!promptEvent) return;
+            if (!promptEvent) {
+                // Browsers fire beforeinstallprompt inconsistently (not at all
+                // on Safari/Firefox, and Chrome/Edge suppress it after a
+                // dismissal or if installed from another profile). Fall back
+                // to telling the user where the browser's own install lives.
+                window.alert('To install Realot:\n\n' +
+                    '\u2022 Chrome / Edge (desktop): click the install icon at the right end of the address bar, or open the \u22EE / \u2026 menu \u2192 "Install Realot" / "Apps".\n' +
+                    '\u2022 Safari (iPhone/iPad): Share \u2192 Add to Home Screen.\n' +
+                    '\u2022 Safari (Mac): File \u2192 Add to Dock.');
+                return;
+            }
             state.deferredPrompt = null;
             notify();
             promptEvent.prompt();

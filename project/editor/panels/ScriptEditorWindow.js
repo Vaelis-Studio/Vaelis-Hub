@@ -1,7 +1,7 @@
 /**
  * editor/panels/ScriptEditorWindow.js
  *
- * Full-screen Monaco code editor for Vaelis scripts. Loaded from the
+ * Full-screen Monaco code editor for Realot scripts. Loaded from the
  * packaged vendor files on first open. Features: dark theme, tabs, auto-save, syntax
  * highlighting, line numbers, code folding, find & replace, minimap,
  * a Scripts folder sidebar (every stored script, one click to open),
@@ -27,13 +27,13 @@ import { editorState, pushLog, markDirty } from "../state/EditorState.js";
 import { getScriptSource, saveScript, getAllScripts, renameScript, scriptExists, deleteScript, onScriptsReplaced } from "../scripting/ScriptStorage.js";
 import { registerIntelliSense, refreshScriptDiagnostics, clearScriptDiagnostics } from "../scripting/ScriptIntelliSense.js";
 import { refreshSyntaxCheck, disposeSyntaxCheck, renameSyntaxCheck } from "../scripting/ScriptSyntaxCheck.js";
-import { defineVaelisTheme, applyVaelisDecorations, clearVaelisDecorations, renameVaelisDecorations } from "../scripting/ScriptHighlighting.js";
+import { defineRealotTheme, applyRealotDecorations, clearRealotDecorations, renameRealotDecorations } from "../scripting/ScriptHighlighting.js";
 
 // Inject CSS once
 (function () {
-  if (document.getElementById("vaelis-script-editor-css")) return;
+  if (document.getElementById("realot-script-editor-css")) return;
   var style = document.createElement("style");
-  style.id = "vaelis-script-editor-css";
+  style.id = "realot-script-editor-css";
   style.textContent =
     ".script-editor-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;background:#1e1e1e;display:flex;flex-direction:column;}" +
     ".script-editor-topbar{display:flex;align-items:center;justify-content:space-between;background:#252526;border-bottom:1px solid #3c3c3c;padding:0 4px;height:40px;flex-shrink:0;}" +
@@ -126,7 +126,7 @@ function _ensureMonaco(callback) {
           noLib: true,
           allowNonTsExtensions: true,
         });
-        // Monaco's OWN automatic JS/TS diagnostics stay off — Vaelis
+        // Monaco's OWN automatic JS/TS diagnostics stay off — Realot
         // scripts reference dozens of engine-injected globals
         // (this.rigidbody, nav, find(), …) that no static analysis of a
         // single file can resolve, so semantic checking would be
@@ -134,14 +134,14 @@ function _ensureMonaco(callback) {
         // brackets, stray tokens) DO show as red squiggles, but via a
         // manual worker call against a cast-stripped shadow model —
         // see ScriptSyntaxCheck.js — never through this automatic path,
-        // so a `x as Type` cast (valid Vaelis syntax, invalid plain
+        // so a `x as Type` cast (valid Realot syntax, invalid plain
         // JS) is never flagged.
         _monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
           noSemanticValidation: true,
           noSyntaxValidation: true,
         });
         registerIntelliSense(_monaco);
-        defineVaelisTheme(_monaco);
+        defineRealotTheme(_monaco);
         _monacoLoadCallbacks.forEach(function (cb) { cb(_monaco); });
         _monacoLoadCallbacks = [];
       },
@@ -242,7 +242,7 @@ function _switchTab(scriptName) {
   refreshSyntaxCheck(_monaco, model, scriptName);
   // Immediate (not debounced) so switching tabs shows correct colors
   // right away instead of plain text until the user's next keystroke.
-  applyVaelisDecorations(_monaco, _editor, model, scriptName);
+  applyRealotDecorations(_monaco, _editor, model, scriptName);
   // Explicitly focus Monaco. Every call path into this function follows
   // a DOM operation that silently drops focus — the initial
   // monaco.editor.create(), and (via mountScriptEditor -> _mountEditor)
@@ -280,7 +280,7 @@ function _closeTab(scriptName) {
     disposeSyntaxCheck(_monaco, _models[scriptName], scriptName);
     _models[scriptName].dispose();
     delete _models[scriptName];
-    clearVaelisDecorations(scriptName);
+    clearRealotDecorations(scriptName);
   }
   if (editorState.scriptEditor.activeTab === scriptName) {
     editorState.scriptEditor.activeTab = editorState.scriptEditor.openTabs[0] || null;
@@ -339,7 +339,7 @@ function _scheduleDiagnostics(scriptName) {
 
 let _highlightTimer = null;
 
-// Re-scans the model for Vaelis API identifiers (input, this.sprite,
+// Re-scans the model for Realot API identifiers (input, this.sprite,
 // .addForce, etc.) and re-applies the colored decorations from
 // ScriptHighlighting.js. Debounced independently from save/diagnostics
 // so a fast typist doesn't pay for three separate full-text scans per
@@ -350,7 +350,7 @@ function _scheduleHighlighting(scriptName) {
   _highlightTimer = setTimeout(function () {
     var model = _models[scriptName];
     if (!model || !_monaco || !_editor) return;
-    applyVaelisDecorations(_monaco, _editor, model, scriptName);
+    applyRealotDecorations(_monaco, _editor, model, scriptName);
   }, 150);
 }
 
@@ -509,10 +509,10 @@ export function renameScriptEverywhere(oldName, newName) {
     delete _models[oldName];
   }
   // Migrate cached syntax-highlighting decoration ids too — see
-  // renameVaelisDecorations()'s doc comment for exactly why skipping
-  // this leaves stale decorations (including vaelis-token-lifecycle
+  // renameRealotDecorations()'s doc comment for exactly why skipping
+  // this leaves stale decorations (including realot-token-lifecycle
   // purple) stuck on the renamed script's text.
-  renameVaelisDecorations(oldName, newName);
+  renameRealotDecorations(oldName, newName);
   renameSyntaxCheck(oldName, newName);
   var tabIdx = editorState.scriptEditor.openTabs.indexOf(oldName);
   if (tabIdx >= 0) editorState.scriptEditor.openTabs[tabIdx] = newName;
@@ -658,7 +658,7 @@ function _mountEditor(container) {
     _editor = monaco.editor.create(container, {
       value: "",
       language: "javascript",
-      theme: "vaelis-dark",
+      theme: "realot-dark",
       automaticLayout: true,
       fontSize: 14,
       minimap: { enabled: true },
@@ -757,7 +757,7 @@ function _resetForReplacedScripts() {
       }
       _models[n].dispose();
     } catch (err) {}
-    try { clearVaelisDecorations(n); } catch (err) {}
+    try { clearRealotDecorations(n); } catch (err) {}
   }
   _models = {};
   var se = editorState.scriptEditor;
@@ -909,7 +909,7 @@ export function renderScriptEditor() {
     '<span id="se-status-text">' + (se.activeTab || "No script open") + '</span>' +
     '<span style="display:flex;align-items:center;gap:12px;">' +
     '<span style="color:#8a93a0;font-size:11px;">Auto-saved • Scripts run only in Play mode</span>' +
-    '<span style="background:#1177bb;color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:3px;letter-spacing:0.3px;">Vaelis Script</span>' +
+    '<span style="background:#1177bb;color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:3px;letter-spacing:0.3px;">Realot Script</span>' +
     '</span>' +
     '</div>' +
     '</div>'

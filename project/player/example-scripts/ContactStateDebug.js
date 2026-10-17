@@ -1,5 +1,5 @@
 /**
- * ContactStateDebug.js — drop-in Vaelis script
+ * ContactStateDebug.js — drop-in Realot script
  *
  * Paste this into the Script Editor (Add Component → Script → new/edit)
  * on any entity that has a Rigidbody2D (Kinematic works best — that's
@@ -114,7 +114,7 @@ function onUpdate(dt) {
   }
 }
 
-// Vaelis compiles this with `new Function(...)` and looks for these
+// Realot compiles this with `new Function(...)` and looks for these
 // exact top-level function names (onStart, onUpdate, onFixedUpdate,
 // onCollision, onCollisionEnter/Exit, onTriggerEnter/Exit, onDestroy) —
 // declare a plain `function name() {}` for each lifecycle you use, no

@@ -1,5 +1,5 @@
 /**
- * GeometryDash.js — drop-in Vaelis script
+ * GeometryDash.js — drop-in Realot script
  *
  * Classic Geometry Dash gameplay: the player auto-scrolls right at a
  * constant speed forever, tap/click/Space jumps, touching an obstacle

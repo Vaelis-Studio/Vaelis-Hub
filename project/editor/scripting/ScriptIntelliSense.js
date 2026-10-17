@@ -1,7 +1,7 @@
 /**
  * editor/scripting/ScriptIntelliSense.js
  *
- * Registers a Monaco completion provider for Vaelis scripting APIs.
+ * Registers a Monaco completion provider for Realot scripting APIs.
  * Completions are context-aware: typing `this.` shows only the
  * properties/components valid for the object the active script was
  * opened from. When a script is shared by several objects (opened
@@ -987,7 +987,7 @@ const RANDOM_API = [
   { label: "int(min, max)", detail: "Random integer in [min, max] inclusive", insert: "int(${1:min}, ${2:max})", kind: "Method", snippet: true },
   { label: "float(min, max)", detail: "Random float in [min, max)", insert: "float(${1:min}, ${2:max})", kind: "Method", snippet: true },
 ];
-// Vaelis's own small gameplay-math helpers — additions to native Math,
+// Realot's own small gameplay-math helpers — additions to native Math,
 // not wrappers around it, so there's no overlap with MATH_NATIVE_API
 // below. Named `mathx` (not `math`) precisely so it can never be misread
 // as either native `Math` or "the engine's math system" — it's a small,
@@ -1620,7 +1620,7 @@ const PATROL_AXIS_NAMES = [
 // confused by engine-only globals like `find`/`this.transform` that aren't
 // real JS. Markers are owned under a private marker "owner" name so they
 // never collide with or get cleared by any other diagnostics source.
-const DIAGNOSTIC_OWNER = "vaelis-string-args";
+const DIAGNOSTIC_OWNER = "realot-string-args";
 
 // One entry per validated call pattern: regex captures the string value,
 // `values()` returns the current valid set, `label` is used in the message.
@@ -1920,7 +1920,7 @@ function _computeDiagnostics(monaco, model) {
         startColumn: startPos.column,
         endLineNumber: endPos.lineNumber,
         endColumn: endPos.column,
-        source: "Vaelis",
+        source: "Realot",
       });
     }
   }
@@ -2010,7 +2010,7 @@ function _computeUnknownWarnings(monaco, model) {
         startColumn: startPos.column,
         endLineNumber: endPos.lineNumber,
         endColumn: endPos.column,
-        source: "Vaelis",
+        source: "Realot",
       });
     }
   }
@@ -2028,7 +2028,7 @@ export function refreshScriptDiagnostics(monaco, model) {
     monaco.editor.setModelMarkers(model, DIAGNOSTIC_OWNER, markers);
   } catch (e) {
     // Never let a diagnostics bug break the editor itself.
-    console.warn("[Vaelis IntelliSense] diagnostics pass failed:", e);
+    console.warn("[Realot IntelliSense] diagnostics pass failed:", e);
   }
 }
 
@@ -2817,7 +2817,7 @@ export function registerIntelliSense(monaco) {
       try {
         return _provideCompletionItemsImpl(monaco, model, position);
       } catch (e) {
-        console.warn("[Vaelis IntelliSense] completion pass failed:", e);
+        console.warn("[Realot IntelliSense] completion pass failed:", e);
         return { suggestions: [] };
       }
     },
@@ -3140,7 +3140,7 @@ function _provideCompletionItemsImpl(monaco, model, position) {
       // ── other.<partial> → collision/trigger callback parameter ───────────
       // `other` is only meaningful as the parameter name of onCollision*/
       // onTrigger* — matched literally rather than tracking real parameter
-      // bindings, since Vaelis's callback signatures are fixed.
+      // bindings, since Realot's callback signatures are fixed.
       if (lineUntil.match(/\bother\.\w*$/)) {
         for (const item of OTHER_PARAM_API) {
           suggestions.push(_makeCompletion(monaco, item, range));
@@ -3673,7 +3673,7 @@ function registerHoverProvider(monaco) {
           contents,
         };
       } catch (e) {
-        console.warn("[Vaelis IntelliSense] hover pass failed:", e);
+        console.warn("[Realot IntelliSense] hover pass failed:", e);
         return null;
       }
     },
@@ -3681,7 +3681,7 @@ function registerHoverProvider(monaco) {
 }
 
 /**
- * Returns every built-in identifier Vaelis scripts can use, grouped by
+ * Returns every built-in identifier Realot scripts can use, grouped by
  * category, for a "show me everything" reference view (e.g. a help panel or
  * command-palette action) — NOT used by the completion/hover providers
  * themselves, which read the API tables directly. Exists so an editor UI can

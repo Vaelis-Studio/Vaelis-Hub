@@ -137,7 +137,7 @@ export const editorState = {
   isPaused: false,
   /** @type {boolean} cached (last-known) status of whether an FSA
    *  backup directory is currently granted and usable — see
-   *  VaelisPersistence.js's isFsaBackupEnabled(), which is async
+   *  RealotPersistence.js's isFsaBackupEnabled(), which is async
    *  (queries IndexedDB) and so can't be called inline from
    *  Toolbar.js's synchronous renderToolbar(). Refreshed on editor
    *  boot and right after a successful enable-fsa-backup action (see

@@ -1,7 +1,7 @@
 /**
  * js/data/EngineVersion.js
  *
- * Single source of truth for "what version of the Vaelis engine is this build"
+ * Single source of truth for "what version of the Realot engine is this build"
  * ON THE LAUNCHER SIDE. The launcher (js/) is plain <script>-tag globals,
  * not ES modules, so it can't `import` project/runtime/EngineVersion.js
  * directly the way the editor does (see that file's own doc comment) —
@@ -14,4 +14,4 @@
  * ENGINE_VERSION whenever that one is bumped — there is no build step
  * in this project to enforce the two automatically matching.
  */
-window.VaelisVersion = "1.0.0";
+window.RealotVersion = "1.0.0";

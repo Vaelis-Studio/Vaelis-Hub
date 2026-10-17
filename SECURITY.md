@@ -11,10 +11,10 @@ origin that holds nothing worth stealing.
 
 Deploy the **same folder** on a second hostname, and tell the editor about it:
 
-1. Add a second domain to your host that serves the same files (on Vercel: add
-   another domain to the same project, e.g. `play.yourdomain.com`).
+1. Add a second domain to your host that serves the same files (on Cloudflare Pages: add
+   a second custom domain to the same project, e.g. `play.yourdomain.com`).
 2. In `project/editor/index.html` set
-   `<meta name="vaelis-play-origin" content="https://play.yourdomain.com" />`.
+   `<meta name="realot-play-origin" content="https://play.yourdomain.com" />`.
 
 That's it. Press Play and the game opens on the play origin. The editor sends
 the scene to it with `postMessage`; scripts there cannot read the editor's

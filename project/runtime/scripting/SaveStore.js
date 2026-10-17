@@ -23,17 +23,17 @@
  * "default"). Each slot is a separate IndexedDB record, so a game can
  * offer multiple independent save files without them clobbering each
  * other. Slots are namespaced under a per-game database (see gameId
- * below) so two different Vaelis games open in the same browser
+ * below) so two different Realot games open in the same browser
  * never see each other's saves.
  *
  * ONE DATABASE PER GAME:
  * The IndexedDB database name is derived from the `gameId` passed to
  * createGame({ gameId }) in runtime/index.js — defaults to the legacy
- * "vaelis-
+ * "realot-
  * default" if the host page never sets one (e.g. the editor's Play
  * popup, which has no meaningful "shipped game" identity). Exported
  * standalone games (see /player) should pass a stable, unique gameId
- * so their save data doesn't collide with any other Vaelis game
+ * so their save data doesn't collide with any other Realot game
  * the same browser has visited.
  *
  * RUNTIME-ONLY FILE. No DOM assumptions beyond `indexedDB` itself
@@ -45,9 +45,9 @@ const DB_VERSION = 1;
 const STORE_NAME = "slots";
 
 function _dbName(gameId) {
-  // Keep this legacy namespace so existing Vaelis projects retain their saves
+  // Keep this legacy namespace so existing Realot projects retain their saves
   // after the identity rename.
-  return "vaelis-save::" + (gameId || "default");
+  return "realot-save::" + (gameId || "default");
 }
 
 /** Opens (creating if needed) the per-game IndexedDB database. */

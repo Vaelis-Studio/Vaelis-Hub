@@ -3,7 +3,7 @@
  * View title/subtitle on the left, contextual search + primary action
  * on the right. Content adapts to the active view.
  */
-window.VaelisTopbar = {
+window.RealotTopbar = {
     titles: {
         projects: { title: 'Projects', sub: 'Recently opened workspaces' },
         learn: { title: 'Learn', sub: 'Guides, references and rendering techniques' },
@@ -11,8 +11,8 @@ window.VaelisTopbar = {
     },
 
     render() {
-        const { el } = window.VaelisDom;
-        const state = window.VaelisStore.getState();
+        const { el } = window.RealotDom;
+        const state = window.RealotStore.getState();
         const meta = this.titles[state.view] || this.titles.projects;
 
         const left = el('div', {}, [
@@ -31,7 +31,7 @@ window.VaelisTopbar = {
         // work the way people expect from a normal link.
         const donateBtn = el('a', {
             class: 'btn btn-donate',
-            href: 'https://paypal.me/VaelisStudio',
+            href: 'https://paypal.me/RealotStudio',
             target: '_blank',
             rel: 'noopener noreferrer',
             title: 'This engine is free, forever — if it saved you time, a donation (any amount) helps keep it that way.'
@@ -48,12 +48,12 @@ window.VaelisTopbar = {
                     type: 'text',
                     placeholder: 'Search projects',
                     value: state.searchQuery,
-                    oninput: (e) => window.VaelisStore.setSearchQuery(e.target.value)
+                    oninput: (e) => window.RealotStore.setSearchQuery(e.target.value)
                 })
             ]);
             const newBtn = el('button', {
                 class: 'btn btn-primary',
-                onClick: () => window.VaelisStore.openModal()
+                onClick: () => window.RealotStore.openModal()
             }, [
                 el('span', { html: '<svg data-lucide="plus"></svg>' }),
                 'New project'

@@ -65,7 +65,7 @@ let _game = null;          // set once the game is running
 let _pendingPaused = null; // pause state requested before the game finished booting
 
 window.addEventListener("message", function (e) {
-  if (!fromEditor(e) || e.data.type !== "vaelis_play_pause") return;
+  if (!fromEditor(e) || e.data.type !== "realot_play_pause") return;
   _pendingPaused = !!e.data.paused;
   if (_game && _game.loop) {
     if (_pendingPaused) _game.loop.pause(); else _game.loop.resume();
@@ -74,21 +74,21 @@ window.addEventListener("message", function (e) {
 
 // Tell the editor when this window gains/loses focus; a cross-origin editor
 // can't read document.hasFocus() on us (it throttles itself while we're focused).
-window.addEventListener("focus", function () { postToEditor({ type: "vaelis_play_focus", focused: true }); });
-window.addEventListener("blur", function () { postToEditor({ type: "vaelis_play_focus", focused: false }); });
+window.addEventListener("focus", function () { postToEditor({ type: "realot_play_focus", focused: true }); });
+window.addEventListener("blur", function () { postToEditor({ type: "realot_play_focus", focused: false }); });
 
 /** Asks the editor for the scene payload and waits for it (10 s). */
 function requestPayload() {
   return new Promise(function (resolve) {
     const timer = setTimeout(function () { window.removeEventListener("message", onMsg); resolve(null); }, 10000);
     function onMsg(e) {
-      if (!fromEditor(e) || e.data.type !== "vaelis_play_payload") return;
+      if (!fromEditor(e) || e.data.type !== "realot_play_payload") return;
       window.removeEventListener("message", onMsg);
       clearTimeout(timer);
       resolve(e.data.payload || null);
     }
     window.addEventListener("message", onMsg);
-    postToEditor({ type: "vaelis_play_ready" });
+    postToEditor({ type: "realot_play_ready" });
   });
 }
 
@@ -140,7 +140,7 @@ function loadAudioAssets(audioAssets) {
 
 /**
  * Wraps this popup's console.log/warn/error so every call is ALSO
- * posted to the editor window as a "vaelis_console_log" message —
+ * posted to the editor window as a "realot_console_log" message —
  * this is what makes a script's plain console.log("...") calls (not
  * just thrown errors) show up in the editor's Console panel while
  * Play mode is running in this separate popup window/document.
@@ -158,7 +158,7 @@ function _wireConsoleForwarding() {
       })
       .join(" ");
     postToEditor({
-      type: "vaelis_console_log",
+      type: "realot_console_log",
       level: level,
       message: text,
     });
@@ -193,7 +193,7 @@ function _wireConsoleForwarding() {
  */
 function createDebugOverlay() {
   const el = document.createElement("div");
-  el.id = "vaelis-debug-hud";
+  el.id = "realot-debug-hud";
   el.style.cssText =
     "position:absolute; top:8px; left:8px; z-index:9999; " +
     "font:12px/1.5 'Consolas','Menlo',monospace; color:#0f0; " +
@@ -395,14 +395,14 @@ async function boot() {
   // so script crashes are visible in the editor without the editor
   // itself ever executing user code. Deliberately does NOT also call
   // console.error() here — that would double-report the same error,
-  // since console.error is itself forwarded as a vaelis_console_log
+  // since console.error is itself forwarded as a realot_console_log
   // message by _wireConsoleForwarding() above. The real console.error
   // (bound before wrapping) still gets it for anyone with devtools open.
   if (game.scriptSystem) {
     game.scriptSystem.onError(function (err) {
       if (window.opener && !window.opener.closed) {
         postToEditor({
-          type: "vaelis_script_error",
+          type: "realot_script_error",
           scriptName: err.scriptName,
           message: err.message,
           line: err.line,
@@ -428,7 +428,7 @@ async function boot() {
     function forward(message, line, scriptName, method) {
       if (window.opener && !window.opener.closed) {
         postToEditor({
-          type: "vaelis_script_error",
+          type: "realot_script_error",
           scriptName: scriptName || "(engine)",
           message: message,
           line: line != null ? String(line) : "?",
@@ -463,10 +463,10 @@ async function boot() {
   await game.saveReady;
 
   game.loop.start();
-  window.__vaelisGame = game;
+  window.__realotGame = game;
   _game = game;
   if (_pendingPaused) game.loop.pause();
-  postToEditor({ type: "vaelis_play_focus", focused: document.hasFocus() });
+  postToEditor({ type: "realot_play_focus", focused: document.hasFocus() });
 
   // Debug HUD (FPS + any custom debug.log() stats a script has set) —
   // created hidden, shown only once a script calls debug.show(). Polls

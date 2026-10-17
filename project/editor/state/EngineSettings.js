@@ -25,7 +25,7 @@
  * EDITOR-ONLY FILE.
  */
 
-const STORAGE_KEY = "vaelis_engine_settings";
+const STORAGE_KEY = "realot_engine_settings";
 
 /** Allowed values for gameFps — mirrors the spec's 4 options exactly.
  *  0 means "Unlimited" (no cap; game runs as fast as rAF allows). */

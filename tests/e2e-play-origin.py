@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errs.append("editor pageerror: " + str(e)[:150]))
     if MODE == "cross":
         def patch(route):
-            r = route.fetch(); body = r.text().replace('name="vaelis-play-origin" content=""', 'name="vaelis-play-origin" content="%s"' % PLAY_ORIGIN)
+            r = route.fetch(); body = r.text().replace('name="realot-play-origin" content=""', 'name="realot-play-origin" content="%s"' % PLAY_ORIGIN)
             route.fulfill(response=r, body=body)
         page.route("**/project/editor/index.html*", patch)
     page.goto(EDITOR, wait_until="domcontentloaded", timeout=60000)
@@ -38,7 +38,7 @@ with sync_playwright() as p:
     with page.expect_popup(timeout=20000) as pop:
         page.click('[data-action="toggle-play"]')
     play = pop.value
-    play.wait_for_function("() => !!window.__vaelisGame", timeout=30000)
+    play.wait_for_function("() => !!window.__realotGame", timeout=30000)
     url = play.url
     check("popup opened on expected origin (%s)" % MODE, url.startswith(PLAY_ORIGIN if MODE == "cross" else "http://127.0.0.1:8001"), url[:70])
     check("popup url carries ?editor=", "editor=" in url)
@@ -56,7 +56,7 @@ with sync_playwright() as p:
         check("(same-origin mode) popup shares storage as before", sec == "TOP-SECRET-KEY", sec)
     # console forwarding + XSS escaping
     play.evaluate("console.log('hello <img src=x onerror=\"window.__pwned=1\">')")
-    play.evaluate("window.opener.postMessage({type:'vaelis_console_log', level:'x\" onmouseover=\"window.__pwned=2', message:'<b id=injected>bold</b>'}, '*')")
+    play.evaluate("window.opener.postMessage({type:'realot_console_log', level:'x\" onmouseover=\"window.__pwned=2', message:'<b id=injected>bold</b>'}, '*')")
     page.wait_for_timeout(900)
     html = page.inner_html('#console-list-el') if page.query_selector('#console-list-el') else ""
     if not html:
@@ -68,18 +68,18 @@ with sync_playwright() as p:
     check("no script ran in the editor (__pwned unset)", page.evaluate("window.__pwned") is None)
     check("bad level did not break out of class attribute", 'onmouseover' not in re.sub(r'&quot;|&amp;', '', html).split('class="log-row')[-1][:40] if 'onmouseover' in html else True)
     # untrusted sender (editor posting to itself) must be ignored
-    page.evaluate("window.postMessage({type:'vaelis_console_log', message:'SPOOF-FROM-SELF'}, '*')")
+    page.evaluate("window.postMessage({type:'realot_console_log', message:'SPOOF-FROM-SELF'}, '*')")
     page.wait_for_timeout(500)
     html2 = page.inner_html('#console-list-el')
     check("message from a non-play window is ignored", "SPOOF-FROM-SELF" not in html2)
     # pause / resume
     page.click('[data-action="toggle-pause"]'); page.wait_for_timeout(500)
-    paused = play.evaluate("window.__vaelisGame.loop._paused")
+    paused = play.evaluate("window.__realotGame.loop._paused")
     check("Pause button pauses the popup's loop", paused is True, paused)
     page.click('[data-action="toggle-pause"]'); page.wait_for_timeout(500)
-    check("Resume works", play.evaluate("window.__vaelisGame.loop._paused") is False)
+    check("Resume works", play.evaluate("window.__realotGame.loop._paused") is False)
     # script error forwarding
-    play.evaluate("window.opener.postMessage({type:'vaelis_script_error', scriptName:'<i>S</i>', message:'boom', line:7, method:'onUpdate'}, '*')")
+    play.evaluate("window.opener.postMessage({type:'realot_script_error', scriptName:'<i>S</i>', message:'boom', line:7, method:'onUpdate'}, '*')")
     page.wait_for_timeout(500)
     check("script error shows up (escaped)", "boom" in page.inner_html('#console-list-el') and page.query_selector('#console-list-el i') is None)
     # replay (reload path)
@@ -90,7 +90,7 @@ with sync_playwright() as p:
     popups = [x for x in pages if 'play-popup' in x.url]
     ok = False
     if popups:
-        try: popups[0].wait_for_function("() => !!window.__vaelisGame", timeout=20000); ok = True
+        try: popups[0].wait_for_function("() => !!window.__realotGame", timeout=20000); ok = True
         except Exception as e: ok = False
     check("play window still alive / re-bootable after toggling", ok, [x.url[:60] for x in pages])
     for e in errs: print("NOTE", e)

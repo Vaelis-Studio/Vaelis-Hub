@@ -22,7 +22,7 @@ import { TRANSFORM } from "../runtime/components/Transform.js";
  */
 function createDebugOverlay() {
   const el = document.createElement("div");
-  el.id = "vaelis-debug-hud";
+  el.id = "realot-debug-hud";
   el.style.cssText =
     "position:absolute; top:8px; left:8px; z-index:9999; " +
     "font:12px/1.5 'Consolas','Menlo',monospace; color:#0f0; " +
@@ -271,7 +271,7 @@ async function boot() {
   // gameId namespaces the `save` global's IndexedDB database (see
   // runtime/index.js and runtime/scripting/SaveStore.js) so this
   // exported game's save data never collides with any other
-   // Vaelis game the player's browser has visited. document.title
+   // Realot game the player's browser has visited. document.title
   // is the simplest stable-per-export identity available here without
   // adding a new export-time config file — exporting under a
   // different page title starts a fresh save database, which matches
@@ -279,7 +279,7 @@ async function boot() {
   const game = createGame({
     pixiApp,
     followMainCamera: true,
-     gameId: document.title || "vaelis-game",
+     gameId: document.title || "realot-game",
   });
 
   // Load a scene shipped alongside the game, falling back to the default
@@ -344,7 +344,7 @@ async function boot() {
 
   // Exposed for debugging from the browser console only; not used by any
   // editor code.
-  window.__vaelisGame = game;
+  window.__realotGame = game;
 }
 
 boot();

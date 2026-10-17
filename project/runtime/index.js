@@ -73,7 +73,7 @@ import { TRANSFORM } from "./components/Transform.js";
  * }}
  */
 export function createGame({ pixiApp, followMainCamera = false, editorPreview = false, gameId, navAreaNames = null }) {
-  window.__vaelisPixiApp = pixiApp; // used by AssetManager for placeholder texture generation
+  window.__realotPixiApp = pixiApp; // used by AssetManager for placeholder texture generation
 
   const world = new World();
 
@@ -243,7 +243,7 @@ export function createGame({ pixiApp, followMainCamera = false, editorPreview = 
   scriptApi._navAreaNames = navAreaNames;
   // `save` (see scripting/components/SaveAPI.js) persists to an
   // IndexedDB database namespaced by gameId, so two different
-   // Vaelis games in the same browser never see each other's save
+   // Realot games in the same browser never see each other's save
   // data. gameId is the caller's identity for the SHIPPED game (set
   // it in player/main.js's createGame() call when exporting) — the
   // editor's own Play popup and Scene viewport calls intentionally

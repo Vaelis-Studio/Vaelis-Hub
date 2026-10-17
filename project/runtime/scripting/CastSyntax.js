@@ -1,13 +1,13 @@
 /**
  * runtime/scripting/CastSyntax.js
  *
- * Vaelis scripts support an editor-only type-cast hint so autocomplete
+ * Realot scripts support an editor-only type-cast hint so autocomplete
  * can narrow an Unknown variable's type:
  *
  *   const body = enemy as DynamicBody;
  *   const obj  = enemy as (DynamicBody, Animator, AudioSource);
  *
- * `as` is NOT valid JavaScript — it's TypeScript syntax that Vaelis
+ * `as` is NOT valid JavaScript — it's TypeScript syntax that Realot
  * borrows purely for IntelliSense (see editor/scripting/ScriptTypeInference.js's
  * CAST_TARGETS / parseCastVariables, which recognize the exact same two
  * forms this file strips). It carries no runtime meaning: the cast target

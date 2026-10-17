@@ -36,12 +36,12 @@ let playOrigin = window.location.origin;
  *
  * Game scripts are ordinary page code, so the safest place to run them is an
  * origin that holds none of the editor's data. Deploy the SAME static folder
- * on a second hostname and put it in <meta name="vaelis-play-origin"> in
+ * on a second hostname and put it in <meta name="realot-play-origin"> in
  * editor/index.html. Empty (the default) = same-origin play, as before.
  * Offline there is no way to reach another host, so fall back to same-origin.
  */
 function resolvePlayOrigin() {
-  const meta = document.querySelector('meta[name="vaelis-play-origin"]');
+  const meta = document.querySelector('meta[name="realot-play-origin"]');
   const raw = meta && meta.content ? meta.content.trim() : "";
   if (!raw) return window.location.origin;
   let url;
@@ -82,7 +82,7 @@ export function isTrustedPlayMessage(e) {
 export function sendPlayPayload() {
   if (!isPlayWindowOpen() || !pendingPayload) return;
   try {
-    playWin.postMessage({ type: "vaelis_play_payload", payload: pendingPayload }, playOrigin);
+    playWin.postMessage({ type: "realot_play_payload", payload: pendingPayload }, playOrigin);
   } catch (err) {
     pushLog("error", "Could not send the scene to the play window: " + (err && err.message ? err.message : err));
   }
@@ -114,7 +114,7 @@ export function getPlayWindow() {
  */
 export function setPlayWindowPaused(paused) {
   if (!isPlayWindowOpen()) return;
-  try { playWin.postMessage({ type: "vaelis_play_pause", paused: !!paused }, playOrigin); } catch (_) { /* popup mid-navigation */ }
+  try { playWin.postMessage({ type: "realot_play_pause", paused: !!paused }, playOrigin); } catch (_) { /* popup mid-navigation */ }
 }
 
 export function closePlayWindow() {
@@ -205,7 +205,7 @@ export function openPlayWindow(game) {
   const features =
     "width=" + winW + ",height=" + winH + ",resizable=yes,scrollbars=no,status=no,toolbar=no,menubar=no,location=no";
 
-  playWin = window.open(buildPlayUrl(), "vaelis_play", features);
+  playWin = window.open(buildPlayUrl(), "realot_play", features);
   if (!playWin) {
     pushLog("error", "Play window was blocked by the browser's popup blocker. Allow popups for this site and press Play again.");
     notifyPlayWindowChanged();

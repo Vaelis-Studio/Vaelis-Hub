@@ -1,7 +1,7 @@
 THIRD-PARTY SOFTWARE INCLUDED IN THIS GAME
 ==========================================
 
-This game was made with Vaelis. It includes the open-source libraries below.
+This game was made with Realot. It includes the open-source libraries below.
 Their licenses require this notice to stay with the game when it is
 distributed. Please do not remove this file.
 

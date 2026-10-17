@@ -4,12 +4,12 @@
  * template. Mounted once at #modal-root and toggled via the .open class
  * so its internal input state survives re-renders of other views.
  */
-window.VaelisNewProjectModal = {
+window.RealotNewProjectModal = {
     nameValue: '',
 
     render() {
-        const { el } = window.VaelisDom;
-        const state = window.VaelisStore.getState();
+        const { el } = window.RealotDom;
+        const state = window.RealotStore.getState();
 
         const nameInput = el('input', {
             type: 'text',
@@ -26,20 +26,20 @@ window.VaelisNewProjectModal = {
             ]),
             el('div', {}, [
                 el('label', { class: 'field-label' }, ['Starting architecture']),
-                window.VaelisTemplateGrid.render()
+                window.RealotTemplateGrid.render()
             ])
         ]);
 
         const footer = el('div', { class: 'modal-footer' }, [
-            el('span', { style: 'font-size:12px;color:var(--text-500);' }, [`Vaelis Engine v${window.VaelisVersion || '1.0.0'} (Stable)`]),
+            el('span', { style: 'font-size:12px;color:var(--text-500);' }, [`Realot Engine v${window.RealotVersion || '1.0.0'} (Stable)`]),
             el('div', { style: 'display:flex;gap:10px;' }, [
-                el('button', { class: 'btn btn-ghost', onClick: () => window.VaelisStore.closeModal() }, ['Cancel']),
+                el('button', { class: 'btn btn-ghost', onClick: () => window.RealotStore.closeModal() }, ['Cancel']),
                 el('button', {
                     class: 'btn btn-primary',
                     onClick: () => {
-                        const project = window.VaelisStore.createProject({ name: this.nameValue.trim() });
+                        const project = window.RealotStore.createProject({ name: this.nameValue.trim() });
                         this.nameValue = '';
-                        window.VaelisNav.openEditor(project);
+                        window.RealotNav.openEditor(project);
                     }
                 }, [
                     'Initialize workspace',
@@ -51,7 +51,7 @@ window.VaelisNewProjectModal = {
         const panel = el('div', { class: 'modal-panel' }, [
             el('div', { class: 'modal-header' }, [
                 el('div', { class: 'modal-title' }, ['New project']),
-                el('button', { class: 'btn btn-icon', title: 'Close', 'aria-label': 'Close', onClick: () => window.VaelisStore.closeModal() }, [
+                el('button', { class: 'btn btn-icon', title: 'Close', 'aria-label': 'Close', onClick: () => window.RealotStore.closeModal() }, [
                     el('span', { html: '<svg data-lucide="x"></svg>' })
                 ])
             ]),
@@ -61,12 +61,12 @@ window.VaelisNewProjectModal = {
 
         const overlay = el('div', {
             class: 'modal-overlay' + (state.modalOpen ? ' open' : ''),
-            onClick: (e) => { if (e.target === overlay) window.VaelisStore.closeModal(); }
+            onClick: (e) => { if (e.target === overlay) window.RealotStore.closeModal(); }
         }, [panel]);
 
         overlay.tabIndex = -1;
         overlay.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') window.VaelisStore.closeModal();
+            if (e.key === 'Escape') window.RealotStore.closeModal();
         });
 
         return overlay;

@@ -34,7 +34,7 @@
 import { NAV_AREA_COUNT } from "../../runtime/components/NavWorld2D.js";
 import { markDirty } from "./EditorState.js";
 
-const STORAGE_KEY = "vaelis_nav_areas";
+const STORAGE_KEY = "realot_nav_areas";
 
 /** Returns the default NAV_AREA_COUNT-element name array. Pre-seeded
  *  with just the two most common areas (Ground/Water) so a new

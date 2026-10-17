@@ -57,7 +57,7 @@ with sync_playwright() as p:
         for _ in range(3):
             try:
                 with ed.expect_popup(timeout=8000) as pop: ed.evaluate("document.querySelector('[data-action=toggle-play]').click()")
-                pl=pop.value; pl.wait_for_function("() => !!window.__vaelisGame", timeout=30000); return pl
+                pl=pop.value; pl.wait_for_function("() => !!window.__realotGame", timeout=30000); return pl
             except Exception: ed.wait_for_timeout(1000)
         raise RuntimeError("could not start play")
     # ---------- Play #1: script-side API ----------
@@ -84,7 +84,7 @@ with sync_playwright() as p:
     # ---------- Play #2: physics follows scaled game time ----------
     setscript(SCRIPT_NOOP); play=start_play(); play.wait_for_timeout(3000)
     out=play.evaluate("""async () => {
-      const g = window.__vaelisGame, api = g.scriptApi, sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+      const g = window.__realotGame, api = g.scriptApi, sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
       const pw = g.world.systems.find(x => x.physicsWorld).physicsWorld;
       let steps = 0; const orig = pw._stepOnce.bind(pw); pw._stepOnce = function () { steps++; return orig.apply(null, arguments); };
       const snap = () => JSON.stringify(g.world.getAllEntities().filter(e=>e.getComponent('Rigidbody2D')).map(e=>e.getComponent('Transform').y));

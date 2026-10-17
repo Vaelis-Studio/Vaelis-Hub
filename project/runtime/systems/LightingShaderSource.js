@@ -502,7 +502,7 @@ export function buildLightingFilter() {
   };
 
   const filter = new PIXI.Filter(VERTEX_SRC, FRAGMENT_SRC, uniforms);
-  filter.resolution = (window.__vaelisPixiApp && window.__vaelisPixiApp.renderer && window.__vaelisPixiApp.renderer.resolution) || Math.min(2, window.devicePixelRatio || 1);
+  filter.resolution = (window.__realotPixiApp && window.__realotPixiApp.renderer && window.__realotPixiApp.renderer.resolution) || Math.min(2, window.devicePixelRatio || 1);
   // autoFit (PIXI's default: true) would size the filter's working
   // area to gameContentContainer's current BOUNDING BOX of rendered
   // sprites — meaning empty background beyond the outermost sprite

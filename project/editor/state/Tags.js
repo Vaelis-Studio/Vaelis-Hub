@@ -17,7 +17,7 @@
 
 import { markDirty } from "./EditorState.js";
 
-const STORAGE_KEY = "vaelis_object_tags";
+const STORAGE_KEY = "realot_object_tags";
 const DEFAULT_TAGS = ["Untagged", "Player", "Enemy"];
 let _sessionCache = null;
 

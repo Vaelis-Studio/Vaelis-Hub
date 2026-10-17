@@ -1,14 +1,14 @@
-# Vaelis — Client Distribution
+# Realot — Client Distribution
 
-This is the static Vaelis editor, runtime, player, and game exporter. It
+This is the static Realot editor, runtime, player, and game exporter. It
 does not include an Android SDK, Gradle, or an APK build server. Android APKs
 are built by the external API server configured in the editor.
 
 ## Run the editor
 
 Upload this folder to any static host that serves ES modules, JSON, WASM, and
-the included vendor files. The included `vercel.json` provides the route
-redirects for Vercel. For a local preview, use any static HTTP server, for
+the included vendor files. The included `_redirects` and `_headers` files configure Cloudflare Pages
+(friendly `/editor` and `/play` routes, cache headers). For a local preview, use any static HTTP server, for
 example:
 
 ```bash
@@ -39,7 +39,7 @@ creating the APK; the finished APK runs independently.
 
 - `docs/index.html` — quick start, scripting API, exporting (linked from the hub's Learn tab).
 - `SECURITY.md` — **read before sharing projects:** game scripts are not sandboxed; set up a separate play origin.
-- `file-association/` — how to get the Vaelis icon on `.vs` project files.
+- `file-association/` — how to get the Realot icon on `.rs` project files.
 - `tests/e2e-play-origin.py` — browser test for the Play window and its origin isolation.
 - `THIRD_PARTY_LICENSES.md` — licenses for bundled libraries. Exported games include their own copy.
 

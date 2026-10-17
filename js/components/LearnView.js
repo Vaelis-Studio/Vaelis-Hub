@@ -3,9 +3,9 @@
  * Documentation entry point. The docs themselves live in /docs/index.html
  * (static, works offline because it is listed in offline-manifest.json).
  */
-window.VaelisLearnView = {
+window.RealotLearnView = {
     render() {
-        const { el } = window.VaelisDom;
+        const { el } = window.RealotDom;
 
         const link = (href, label, desc) =>
             el('a', {

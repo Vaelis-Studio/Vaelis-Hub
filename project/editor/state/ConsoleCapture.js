@@ -90,11 +90,11 @@ export function installConsoleCapture() {
   // before main.js even finished importing). Without this, those early
   // errors are lost — the editor console shows nothing about why a
   // particular module or asset failed to load.
-  if (window.__vaelisEarlyErrors && window.__vaelisEarlyErrors.length) {
-    for (const entry of window.__vaelisEarlyErrors) {
+  if (window.__realotEarlyErrors && window.__realotEarlyErrors.length) {
+    for (const entry of window.__realotEarlyErrors) {
       pushLog(entry.level, entry.msg);
     }
-    window.__vaelisEarlyErrors = [];
+    window.__realotEarlyErrors = [];
   }
 }
 

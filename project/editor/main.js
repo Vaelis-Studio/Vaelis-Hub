@@ -61,7 +61,7 @@ import { exportProject } from "./state/ProjectIO.js";
 installConsoleCapture();
 
 // Wires index.html's early auto-recovery reload (see its own big
-// comment block on window.__vaelisDirtyCheck) to the SAME
+// comment block on window.__realotDirtyCheck) to the SAME
 // dirtyState.isDirty flag this file's own beforeunload guard below
 // checks, so a forced recovery reload can never silently discard
 // unsaved work the way a plain location.replace() call used to.
@@ -72,11 +72,11 @@ installConsoleCapture();
 // before it exists at all is if main.js itself never loaded, in which
 // case index.html's own hasUnsavedChanges() correctly treats it as
 // "can't tell, don't risk it" and allows the reload anyway).
-window.__vaelisDirtyCheck = function () {
+window.__realotDirtyCheck = function () {
   return dirtyState.isDirty === true;
 };
 
-// Same pattern as __vaelisDirtyCheck just above, for index.html's
+// Same pattern as __realotDirtyCheck just above, for index.html's
 // recovery toast's "Save now" button. Deliberately a lazy wrapper
 // rather than assigning editorState.saveNow directly: that property
 // isn't set until boot() finishes (see the "editorState.saveNow ="
@@ -85,7 +85,7 @@ window.__vaelisDirtyCheck = function () {
 // (see EditorEvents.js's own comment on editorState.saveNow), so this
 // checks for it at CALL time rather than assuming it exists the moment
 // this file starts running.
-window.__vaelisSaveNow = function () {
+window.__realotSaveNow = function () {
   if (typeof editorState.saveNow === "function") editorState.saveNow();
 };
 
@@ -405,20 +405,20 @@ function boot() {
     if (!e.data || typeof e.data !== "object" || !isTrustedPlayMessage(e)) return;
     const clip = (v, max) => String(v == null ? "" : v).slice(0, max);
     switch (e.data.type) {
-      case "vaelis_play_ready":
+      case "realot_play_ready":
         sendPlayPayload();
         return;
-      case "vaelis_play_focus":
+      case "realot_play_focus":
         setRemotePlayFocus(e.data.focused === true);
         return;
-      case "vaelis_console_log": {
+      case "realot_console_log": {
         // A script's own console.log/warn/error call during Play mode.
         const level = e.data.level === "error" || e.data.level === "warn" ? e.data.level : "log";
         pushLog(level, clip(e.data.message, 4000));
         render();
         return;
       }
-      case "vaelis_script_error":
+      case "realot_script_error":
         pushLog("error", formatScriptErrorLog({
           scriptName: clip(e.data.scriptName, 200),
           message: clip(e.data.message, 4000),
@@ -431,7 +431,7 @@ function boot() {
     }
   });
   startLiveStats(editorState);
-  // Double-clicking a .vs file in the OS (when Vaelis is installed as an app)
+  // Double-clicking a .rs file in the OS (when Realot is installed as an app)
   // launches the editor with that file. See "file_handlers" in
   // manifest.webmanifest. Unsupported browsers simply don't have launchQueue.
   if (window.launchQueue && typeof window.launchQueue.setConsumer === "function") {
@@ -452,11 +452,11 @@ function boot() {
   // previously-granted FSA permission for THIS project — see
   // EditorState.js's fsaBackupEnabled doc comment for why this is a
   // cached flag rather than an inline call inside renderToolbar().
-  // isFsaBackupEnabled() never prompts (see VaelisPersistence.js), so
+  // isFsaBackupEnabled() never prompts (see RealotPersistence.js), so
   // this is safe to call unconditionally on every boot with no user
   // gesture required.
-  if (editorState.projectId && window.VaelisPersistence && typeof window.VaelisPersistence.isFsaBackupEnabled === "function") {
-    window.VaelisPersistence.isFsaBackupEnabled(editorState.projectId).then((enabled) => {
+  if (editorState.projectId && window.RealotPersistence && typeof window.RealotPersistence.isFsaBackupEnabled === "function") {
+    window.RealotPersistence.isFsaBackupEnabled(editorState.projectId).then((enabled) => {
       if (enabled !== editorState.fsaBackupEnabled) {
         editorState.fsaBackupEnabled = enabled;
         render();
@@ -499,7 +499,7 @@ function boot() {
         // pagehide attempt), that's very unlikely to self-resolve —
         // most commonly this project has grown past what this
         // browser's storage will allow (localStorage AND IndexedDB
-        // both rejected the write — see VaelisPersistence.js's setItem)
+        // both rejected the write — see RealotPersistence.js's setItem)
         // — and continuing to work in this state risks real data
         // loss if the tab is ever closed. A native confirm() dialog
         // is used deliberately over a dismissible toast: it's the one
@@ -554,7 +554,7 @@ function boot() {
     // unload to confirm it actually landed (IndexedDB writes are
     // async; the page can finish unloading before one completes,
     // especially for a large project that just spilled past
-    // localStorage's quota — see VaelisPersistence.js's setItem tiering).
+    // localStorage's quota — see RealotPersistence.js's setItem tiering).
     // beforeunload's preventDefault()/returnValue mechanism is the
     // ONLY standard way to make the browser pause and ask first, so
     // this listener's whole job is deciding WHETHER to trigger that

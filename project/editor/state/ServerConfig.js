@@ -1,7 +1,7 @@
 // Android APK export: where the build requests go, and how the user
 // tells the editor which server to use.
 //
-// This editor is deployed as static files (e.g. on Vercel), which cannot
+// This editor is deployed as static files (e.g. on Cloudflare Pages), which cannot
 // run the Android/Gradle build itself. The actual build happens on a
 // separate server that turns the uploaded project zip into an APK.
 //
@@ -22,8 +22,8 @@
 // it (no https://, no extra path). Only surrounding spaces and trailing
 // slashes are dropped so the fixed API paths the editor appends itself
 // (e.g. /api/v1/build) don't end up with a double slash.
-/** The Vaelis APK service: where users get an API key (or upload an HTML5 export). */
-export const APK_SERVICE_URL = "https://apk-builder--vaelis-server.replit.app/";
+/** The Realot APK service: where users get an API key (or upload an HTML5 export). */
+export const APK_SERVICE_URL = "https://apk-builder--realot-server.replit.app/";
 
 export function normalizeServerUrl(raw) {
   return String(raw || "").trim().replace(/\/+$/, "");
@@ -31,7 +31,7 @@ export function normalizeServerUrl(raw) {
 
 import { setAndroidBuildTicket, markAndroidJobFinished, resolveAgainstServer } from "./AndroidBuildSession.js";
 
-const STORAGE_KEY = "vaelis.androidBuildServers";
+const STORAGE_KEY = "realot.androidBuildServers";
 
 // Shape of a saved credential entry:
 //   { id: string, label: string, serverUrl: string, apiKey: string }
@@ -183,7 +183,7 @@ export function androidExportHeaders(server, extra = {}) {
 // job.downloadUrl (or the top-level downloadUrl — same URL). This polls
 // statusUrl until the job finishes, then returns that URL.
 //
-// The Vaelis APK build server (see its src/routes/builds.ts /
+// The Realot APK build server (see its src/routes/builds.ts /
 // src/lib/apk-builder.ts) uses exactly this closed set of job statuses —
 // confirmed directly from its source, not guessed: "queued" and
 // "building" are in-progress, "completed" and "failed" are terminal.

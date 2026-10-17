@@ -11,14 +11,14 @@
  * exact same underlying data shape (manifest + scenes + assets +
  * scripts + layers), just through a different transport:
  *   - ProjectIO.js       -> JSZip -> a downloaded .zip file
- *   - ProjectStorage.js  -> VaelisPersistence (localStorage/IndexedDB),
+ *   - ProjectStorage.js  -> RealotPersistence (localStorage/IndexedDB),
  *                           keyed by the launcher's project id, no
  *                           user action required
  *
  * WHY THIS FILE EXISTS SEPARATELY FROM ScriptStorage.js/PhysicsLayers.js/
  * Tags.js's OWN localStorage calls: those three each persist to one
  * fixed, GLOBAL localStorage key shared by every project (e.g. every
- * project's scripts landed in the same "vaelis_scripts" key). That's
+ * project's scripts landed in the same "realot_scripts" key). That's
  * exactly the bug this feature fixes — this file additionally snapshots
  * their contents into the CURRENT project's own namespaced storage slot
  * and, on load, replaces their global contents with that project's own
@@ -27,7 +27,7 @@
  *
  * STORAGE KEY SHAPE (must match js/data/store.js's project ids, which
  * come from the launcher and are passed to the editor via ?project=):
- *   vaelis.project.<id>.snapshot   -> the full project snapshot (see
+ *   realot.project.<id>.snapshot   -> the full project snapshot (see
  *                                        buildSnapshot() below)
  *
  * EDITOR-ONLY FILE.
@@ -41,13 +41,13 @@ import { getNavAreaNames, replaceAllNavAreaNames, getDefaultNavAreaNames } from 
 import { getTagNames, replaceAllTagNames, getDefaultTagNames } from "./Tags.js";
 import { editorState, markClean } from "./EditorState.js";
 
-const SNAPSHOT_KEY_PREFIX = "vaelis.project.";
+const SNAPSHOT_KEY_PREFIX = "realot.project.";
 const SNAPSHOT_KEY_SUFFIX = ".snapshot";
 /** Autosave cadence: every 1 minute, per the launcher's persistence contract. */
 export const AUTOSAVE_INTERVAL_MS = 60 * 1000;
 
 /**
- * window.VaelisPersistence is loaded as a plain classic <script> (see
+ * window.RealotPersistence is loaded as a plain classic <script> (see
  * project/editor/index.html) rather than an ES import, the same way
  * PIXI/JSZip/Hammer are, so it's one shared instance across the
  * launcher and every editor tab. Guarded here in case the editor is
@@ -56,8 +56,8 @@ export const AUTOSAVE_INTERVAL_MS = 60 * 1000;
  * down the whole editor boot.
  */
 function _persistence() {
-  if (window.VaelisPersistence) return window.VaelisPersistence;
-  console.error("[ProjectStorage] window.VaelisPersistence is unavailable — autosave will not persist across reloads.");
+  if (window.RealotPersistence) return window.RealotPersistence;
+  console.error("[ProjectStorage] window.RealotPersistence is unavailable — autosave will not persist across reloads.");
   return {
     setItem: () => Promise.resolve({ ok: false, tier: "none" }),
     setItemSync: () => ({ ok: false, tier: "none" }),
@@ -67,15 +67,15 @@ function _persistence() {
   };
 }
 
-// Key format lives in one place: window.VaelisPersistence.projectSnapshotKey()
-// (see js/data/VaelisPersistence.js) — used by both this file and the
+// Key format lives in one place: window.RealotPersistence.projectSnapshotKey()
+// (see js/data/RealotPersistence.js) — used by both this file and the
 // launcher's js/data/store.js (which deletes a project's snapshot when
 // the project itself is deleted) so the two can never drift on the key
 // format between them.
 function snapshotKey(projectId) {
   return _persistence().projectSnapshotKey
     ? _persistence().projectSnapshotKey(projectId)
-    : SNAPSHOT_KEY_PREFIX + projectId + SNAPSHOT_KEY_SUFFIX; // fallback if VaelisPersistence.js failed to load — see _persistence()
+    : SNAPSHOT_KEY_PREFIX + projectId + SNAPSHOT_KEY_SUFFIX; // fallback if RealotPersistence.js failed to load — see _persistence()
 }
 
 /**
@@ -218,14 +218,14 @@ export async function applySnapshot(game, snapshot) {
 
 /**
  * Persists the current project state under its launcher-assigned id.
- * Never throws — VaelisPersistence.setItem() already swallows/reports its
+ * Never throws — RealotPersistence.setItem() already swallows/reports its
  * own storage errors, so a failed autosave degrades to "kept in memory
  * for this tab only" rather than crashing the editor loop.
  *
  * NOTE: this only performs the normal async, tiered save (localStorage
- * or IndexedDB, whichever fits — see VaelisPersistence.js's setItem doc
+ * or IndexedDB, whichever fits — see RealotPersistence.js's setItem doc
  * comment — plus the best-effort FSA mirror). It does NOT include the
- * synchronous safety-net write VaelisPersistence.js's setItemSync()
+ * synchronous safety-net write RealotPersistence.js's setItemSync()
  * provides — that's called directly by startAutosave()'s runSave()
  * for pagehide/beforeunload specifically, BEFORE this function, so it
  * can never end up waiting behind this function's own inFlight
@@ -336,7 +336,7 @@ export function startAutosave(getContext, onSaved) {
     const isExitReason = reason === "pagehide";
     // "Exit" reasons are racing an actual page unload the browser will
     // NOT wait for, so their synchronous localStorage safety-net write
-    // (see setItemSync's doc comment in VaelisPersistence.js) must happen
+    // (see setItemSync's doc comment in RealotPersistence.js) must happen
     // RIGHT HERE, unconditionally and before anything below that could
     // wait on an in-flight promise — an unrelated save already in
     // flight (interval tick, another exit handler) must never delay
@@ -384,7 +384,7 @@ export function startAutosave(getContext, onSaved) {
       consecutiveFailures = result && result.ok ? 0 : consecutiveFailures + 1;
       // Only a write that ACTUALLY landed in localStorage/IndexedDB
       // (result.ok) clears the unsaved-changes flag — a failed write
-      // (see VaelisPersistence.js's setItem, which never throws, only
+      // (see RealotPersistence.js's setItem, which never throws, only
       // reports {ok:false}) must leave isDirty=true so the reload/close
       // guard in main.js still warns the user, exactly the case where
       // that warning matters most (storage is full/broken AND the tab

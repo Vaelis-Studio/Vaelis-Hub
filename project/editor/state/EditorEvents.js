@@ -1558,7 +1558,7 @@ let _lastSceneClick = { id: null, time: 0 };
       case "save-now": {
         // Manual, immediate save to this project's autosave slot (see
         // ProjectStorage.js's startAutosave/saveNow) — distinct from
-        // "save-project" above, which downloads a .vs. Guarded the
+        // "save-project" above, which downloads a .rs. Guarded the
         // same way that action is: no-op with nothing to do if there's
         // no game loaded or no autosave loop running for this project
         // (editorState.saveNow is only set for a launcher project —
@@ -1634,7 +1634,7 @@ let _lastSceneClick = { id: null, time: 0 };
         // Called directly from this click handler (not through any
         // async gap first) — showDirectoryPicker() requires an
         // in-progress user gesture, so this must stay a synchronous
-        // continuation of the click. See VaelisPersistence.js's FSA
+        // continuation of the click. See RealotPersistence.js's FSA
         // section doc comment for the full explanation of why this
         // can't just happen automatically the first time autosave
         // runs.
@@ -1642,11 +1642,11 @@ let _lastSceneClick = { id: null, time: 0 };
           pushLog("error", "Extra backup storage needs a project opened from the launcher.");
           break;
         }
-        if (!window.VaelisPersistence || typeof window.VaelisPersistence.enableFsaBackup !== "function") {
+        if (!window.RealotPersistence || typeof window.RealotPersistence.enableFsaBackup !== "function") {
           pushLog("error", "Extra backup storage isn't available in this browser.");
           break;
         }
-        window.VaelisPersistence.enableFsaBackup(editorState.projectId).then((result) => {
+        window.RealotPersistence.enableFsaBackup(editorState.projectId).then((result) => {
           if (result.ok) {
             editorState.fsaBackupEnabled = true;
             pushLog("log", "Extra backup storage enabled — auto-saves will also be mirrored to \u201c" + result.name + "\u201d.");
@@ -1660,17 +1660,17 @@ let _lastSceneClick = { id: null, time: 0 };
       case "disable-fsa-backup": {
         // Turning OFF is always safe to run immediately, no user-gesture
         // constraint like enable-fsa-backup has (no picker involved) —
-        // see VaelisPersistence.js's disableFsaBackup doc comment. This
+        // see RealotPersistence.js's disableFsaBackup doc comment. This
         // only stops future mirror writes; it never touches the folder
         // on disk or the project's IndexedDB/localStorage copy, which
         // remains the source of truth exactly as it was while backup
         // was on.
         if (!editorState.projectId) break;
-        if (!window.VaelisPersistence || typeof window.VaelisPersistence.disableFsaBackup !== "function") {
+        if (!window.RealotPersistence || typeof window.RealotPersistence.disableFsaBackup !== "function") {
           pushLog("error", "Extra backup storage isn't available in this browser.");
           break;
         }
-        window.VaelisPersistence.disableFsaBackup(editorState.projectId).then(() => {
+        window.RealotPersistence.disableFsaBackup(editorState.projectId).then(() => {
           editorState.fsaBackupEnabled = false;
           pushLog("log", "Extra backup storage turned off. Nothing already saved was deleted \u2014 this only stops mirroring future auto-saves.");
           render();
@@ -1679,11 +1679,11 @@ let _lastSceneClick = { id: null, time: 0 };
       }
       case "restore-fsa-backup": {
         if (!editorState.projectId || !editorState.game) break;
-        if (!window.VaelisPersistence || typeof window.VaelisPersistence.readFsaBackup !== "function") {
+        if (!window.RealotPersistence || typeof window.RealotPersistence.readFsaBackup !== "function") {
           pushLog("error", "Extra backup storage isn't available in this browser.");
           break;
         }
-        window.VaelisPersistence.readFsaBackup(editorState.projectId).then((result) => {
+        window.RealotPersistence.readFsaBackup(editorState.projectId).then((result) => {
           if (!result.ok) {
             pushLog(
               "error",
@@ -1791,7 +1791,7 @@ let _lastSceneClick = { id: null, time: 0 };
         editorState.androidServerFormOpen = true;
         editorState.androidServerFormEditingId = null;
         editorState.androidServerFormLabel = "";
-        editorState.androidServerFormUrl = APK_SERVICE_URL.replace(/\/$/, ""); // prefilled with the Vaelis APK service; editable
+        editorState.androidServerFormUrl = APK_SERVICE_URL.replace(/\/$/, ""); // prefilled with the Realot APK service; editable
         editorState.androidServerFormKey = "";
         editorState.androidServerFormError = "";
         render();
@@ -2527,7 +2527,7 @@ case "select-scene-file": {
     if (spriteAssetTarget) {
       const key = spriteAssetTarget.dataset.spriteKey;
       if (!key) return;
-      e.dataTransfer.setData("application/x-vaelis-sprite-key", key);
+      e.dataTransfer.setData("application/x-realot-sprite-key", key);
       e.dataTransfer.effectAllowed = "copy";
       return;
     }
@@ -2536,7 +2536,7 @@ case "select-scene-file": {
     if (audioAssetTarget) {
       const key = audioAssetTarget.dataset.audioKey;
       if (!key) return;
-      e.dataTransfer.setData("application/x-vaelis-audio-key", key);
+      e.dataTransfer.setData("application/x-realot-audio-key", key);
       e.dataTransfer.effectAllowed = "copy";
       return;
     }
@@ -2545,7 +2545,7 @@ case "select-scene-file": {
     if (prefabAssetTarget) {
       const prefabId = prefabAssetTarget.dataset.prefabId;
       if (!prefabId) return;
-      e.dataTransfer.setData("application/x-vaelis-prefab-id", prefabId);
+      e.dataTransfer.setData("application/x-realot-prefab-id", prefabId);
       e.dataTransfer.effectAllowed = "copy";
       return;
     }
@@ -3621,8 +3621,8 @@ function applyFieldChange(field, inputEl) {
 }
 
 /**
- * Loads a project file (.vs, or an older .zip) into the editor, replacing the
- * current project. Used by File -> Load Project and by double-clicking a .vs
+ * Loads a project file (.rs, or an older .zip) into the editor, replacing the
+ * current project. Used by File -> Load Project and by double-clicking a .rs
  * file in the OS (see the launchQueue consumer in main.js).
  *
  * @param {File} file

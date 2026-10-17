@@ -162,7 +162,7 @@ export function renderToolbar() {
     // Plain navigation link (not a data-action) back to the launcher —
     // deliberately NOT routed through EditorEvents.js since this isn't
     // an editor/scene action, just leaving the app.
-    '<a class="pill-btn" href="../../index.html" title="Back to Hub" style="text-decoration:none;display:inline-flex;align-items:center;">' +
+    '<a class="pill-btn" href="../../" title="Back to Hub" style="text-decoration:none;display:inline-flex;align-items:center;">' +
     icon("chevronleft", 10) +
     " Hub" +
     "</a>" +
@@ -250,7 +250,7 @@ function renderFileMenu() {
     // "Save Now" — a real, immediate, awaited save to this project's
     // autosave slot (the same localStorage/IndexedDB snapshot the
     // 1-minute autosave loop writes to — see ProjectStorage.js), as
-    // opposed to "Save Project" below, which downloads a .vs. Only
+    // opposed to "Save Project" below, which downloads a .rs. Only
     // shown for a project actually opened from the launcher — an
     // editor opened standalone has no autosave loop/project id to save
     // into at all (see EditorState.js's saveNow doc comment). The
@@ -316,7 +316,7 @@ function renderFileMenu() {
     "</button>" +
     // Only shown once backup is actually on for this project —
     // restoring from a folder that was never set up (or was set up
-    // for a DIFFERENT project — see VaelisPersistence.js's per-project
+    // for a DIFFERENT project — see RealotPersistence.js's per-project
     // handle keying) has nothing to restore, so surfacing this button
     // beforehand would just be a guaranteed "no backup found" error.
     (editorState.fsaBackupEnabled
@@ -333,7 +333,7 @@ function renderFileMenu() {
     // Import Audio (a real <input type="file"> hidden and
     // programmatically clicked, listened to via the delegated "change"
     // handler in EditorEvents.js).
-    '<input type="file" accept=".vs,.zip" data-action="load-project-input" style="display:none;" />' +
+    '<input type="file" accept=".rs,.vs,.zip" data-action="load-project-input" style="display:none;" />' +
     "</div>"
   );
 }

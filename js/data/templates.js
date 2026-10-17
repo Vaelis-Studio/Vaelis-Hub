@@ -3,7 +3,7 @@
  * Static catalog of project starter templates offered in the New Project modal.
  * Exposed as a global for simplicity since this launcher has no bundler.
  */
-window.VaelisTemplates = [
+window.RealotTemplates = [
     {
         id: 'blank',
         name: 'Blank Canvas',

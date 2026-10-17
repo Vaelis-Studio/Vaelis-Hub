@@ -1,6 +1,6 @@
-# Vaelis Web Export → Android APK contract
+# Realot Web Export → Android APK contract
 
-Vaelis HTML5 and PWA exports are standalone ZIP packages. The APK build path must consume that ZIP directly; it must not reconstruct the game from editor-only project data.
+Realot HTML5 and PWA exports are standalone ZIP packages. The APK build path must consume that ZIP directly; it must not reconstruct the game from editor-only project data.
 
 ## Request
 
@@ -25,7 +25,7 @@ The ZIP must contain `index.html` at its root. The runtime and all referenced as
 
 ## Android behavior
 
-The APK wrapper should load the bundled `index.html` locally from the APK/WebView asset space. The game should not require the build server, Vercel, or an external asset URL at runtime.
+The APK wrapper should load the bundled `index.html` locally from the APK/WebView asset space. The game should not require the build server, any hosting provider, or an external asset URL at runtime.
 
 For a PWA source package, `manifest.webmanifest` and `sw.js` may be present. An APK wrapper does not need a browser install prompt or service-worker registration; it should simply load the same `index.html` and bundled runtime/assets. Ignoring service-worker registration inside a native wrapper is acceptable.
 

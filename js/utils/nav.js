@@ -1,13 +1,13 @@
 /**
  * nav.js
  * Navigation from the launcher into the editor. The editor lives at
- * /project/editor/index.html and is opened in the same frame
+ * /project/editor/ and is opened in the same frame
  * (replacing the launcher) so the React host stays put and no new tab
  * is opened. The project id/name is passed as a query param so the
  * editor can identify the open project; the store also records the
  * last-opened time so the project bubbles to the top of the list.
  */
-window.VaelisNav = {
+window.RealotNav = {
     openEditor(project) {
         const params = new URLSearchParams();
         if (project && project.id) params.set('project', project.id);
@@ -19,14 +19,14 @@ window.VaelisNav = {
         // already has its own saved snapshot, so there's no reason to keep
         // widening this URL's contract for every project going forward.
         if (project && project.templateId) {
-            const tpl = window.VaelisTemplates.find(t => t.id === project.templateId);
+            const tpl = window.RealotTemplates.find(t => t.id === project.templateId);
             if (tpl && tpl.hasBundledData) params.set('template', tpl.id);
         }
-        if (project && project.id) window.VaelisStore.touchProject(project.id);
+        if (project && project.id) window.RealotStore.touchProject(project.id);
         const qs = params.toString();
-        window.location.href = 'project/editor/index.html' + (qs ? '?' + qs : '');
+        window.location.href = 'project/editor/' + (qs ? '?' + qs : '');
     },
     backToHub() {
-        window.location.href = 'index.html';
+        window.location.href = './';
     }
 };

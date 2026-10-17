@@ -9,9 +9,9 @@
      For safety when sharing projects, deploy this same folder on a second
      hostname and put it here, e.g. content="https://play.example.com".
      See SECURITY.md. -->
-<meta name="vaelis-play-origin" content="" />
+<meta name="realot-play-origin" content="" />
 <meta http-equiv="Expires" content="0" />
-<title>Vaelis Editor</title>
+<title>Realot Editor</title>
 <!-- Same icon set as the Hub (index.html) so the browser tab icon
      matches everywhere in the app. Google Search itself only reads ONE
      favicon per hostname, taken from the homepage (see
@@ -19,27 +19,27 @@
      since /editor lives on the same hostname as the Hub rather than a
      separate subdomain, these links here only affect this page's own
      browser tab, not what shows in Google Search results. -->
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" href="../../icons/icon-48.png" type="image/png" sizes="48x48" />
-<link rel="icon" href="../../icons/icon-192.png" type="image/png" sizes="192x192" />
-<link rel="apple-touch-icon" href="../../icons/icon-512.png" />
+<link rel="icon" href="../../favicon.ico?v=2" sizes="any" />
+<link rel="icon" href="../../icons/icon-48.png?v=2" type="image/png" sizes="48x48" />
+<link rel="icon" href="../../icons/icon-192.png?v=2" type="image/png" sizes="192x192" />
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png?v=2" />
 <script src="../vendor/pixi/pixi.min.js"></script>
 <script src="../vendor/jszip/jszip.min.js"></script>
 <script src="../vendor/hammer/hammer.min.js"></script>
 <link rel="stylesheet" href="../../css/fonts/fonts.css" />
 <!-- Shared tiered storage (localStorage + IndexedDB fallback) used by
      both the launcher and this editor for per-project autosave — see
-     js/data/VaelisPersistence.js and editor/state/ProjectStorage.js.
+     js/data/RealotPersistence.js and editor/state/ProjectStorage.js.
      Loaded as a plain classic script (not an ES import) so it's
-     available as window.VaelisPersistence before any editor module runs,
+     available as window.RealotPersistence before any editor module runs,
      exactly like the other local engine vendor files above. -->
-<script src="../../js/data/VaelisPersistence.js"></script>
+<script src="../../js/data/RealotPersistence.js"></script>
 <!-- Bundled template project data (e.g. the "Platformer Kit" template's
      real scenes/assets/scripts) — only used on a brand-new project's
      very first open, to seed it instead of the blank starter scene.
      See SceneViewport.js's loadInitialProject() and js/data/templates.js's
-     hasBundledData. Loaded the same way as VaelisPersistence.js above: a
-     plain classic script populating a global (window.VaelisTemplateData),
+     hasBundledData. Loaded the same way as RealotPersistence.js above: a
+     plain classic script populating a global (window.RealotTemplateData),
      not the launcher's full templates.js/store.js (those are launcher-UI
      only and this editor has no use for them). -->
 <script src="../../js/data/templates/platformer-starter.data.js"></script>
@@ -51,9 +51,9 @@
 <script>
 // Early error buffer: collect errors BEFORE main.js loads so they can
 // be flushed into the editor's ConsoleCapture once it's ready.
-window.__vaelisEarlyErrors = [];
-window.__vaelisEarlyLogs = function(level, msg) {
-  window.__vaelisEarlyErrors.push({ level: level, msg: msg, time: Date.now() });
+window.__realotEarlyErrors = [];
+window.__realotEarlyLogs = function(level, msg) {
+  window.__realotEarlyErrors.push({ level: level, msg: msg, time: Date.now() });
 };
 
 // Auto-recovery: if a JS module fails to load (e.g. "Failed to fetch
@@ -75,7 +75,7 @@ window.__vaelisEarlyLogs = function(level, msg) {
 // conditions that cause other performance-pressure symptoms elsewhere
 // in the editor (low memory, GC pauses, a slow/failed module fetch) —
 // i.e. precisely when the person is most likely to have unsaved work
-// sitting in the live scene. window.__vaelisDirtyCheck (installed
+// sitting in the live scene. window.__realotDirtyCheck (installed
 // below, read by main.js) lets this script check the SAME
 // dirtyState.isDirty flag main.js's own beforeunload guard uses,
 // without needing to import any editor module (this script runs too
@@ -84,13 +84,13 @@ window.__vaelisEarlyLogs = function(level, msg) {
 // this defaults to allowing the reload — a module-load failure this
 // early in boot means there's realistically no in-memory project data
 // to lose yet.
-window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has loaded — see EditorState.js's markDirty doc comment
+window.__realotDirtyCheck = null; // set by main.js once EditorState.js has loaded — see EditorState.js's markDirty doc comment
 (function () {
   var p = new URLSearchParams(location.search);
   var recovered = p.get("recovered") === "1";
   function hasUnsavedChanges() {
     try {
-      return typeof window.__vaelisDirtyCheck === "function" && window.__vaelisDirtyCheck() === true;
+      return typeof window.__realotDirtyCheck === "function" && window.__realotDirtyCheck() === true;
     } catch (_) {
       return false;
     }
@@ -115,9 +115,9 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     location.replace(location.pathname + "?" + p.toString());
   }
   function showUnsavedRecoveryToast() {
-    if (document.getElementById("vaelis-recovery-toast")) return; // already showing
+    if (document.getElementById("realot-recovery-toast")) return; // already showing
     var el = document.createElement("div");
-    el.id = "vaelis-recovery-toast";
+    el.id = "realot-recovery-toast";
     el.style.cssText =
       "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:999999;" +
       "display:flex;align-items:center;gap:12px;max-width:min(90vw,460px);padding:10px 16px;" +
@@ -125,23 +125,23 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
       "font-size:12px;line-height:1.4;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.5);";
     el.innerHTML =
       '<span>A background file failed to load, but your unsaved changes are safe \u2014 save your work, then reload when ready.</span>' +
-      '<button id="vaelis-recovery-toast-save" style="flex-shrink:0;padding:6px 12px;background:#6366f1;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:12px;">Save now</button>' +
-      '<button id="vaelis-recovery-toast-dismiss" style="flex-shrink:0;background:none;border:none;color:#8e8e9a;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;">\u00d7</button>';
+      '<button id="realot-recovery-toast-save" style="flex-shrink:0;padding:6px 12px;background:#6366f1;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:12px;">Save now</button>' +
+      '<button id="realot-recovery-toast-dismiss" style="flex-shrink:0;background:none;border:none;color:#8e8e9a;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;">\u00d7</button>';
     document.body.appendChild(el);
-    var saveBtn = document.getElementById("vaelis-recovery-toast-save");
+    var saveBtn = document.getElementById("realot-recovery-toast-save");
     if (saveBtn) {
       saveBtn.addEventListener("click", function () {
-        // window.__vaelisSaveNow is wired by main.js's boot() the same
-        // way __vaelisDirtyCheck is (see that comment above) — calls
+        // window.__realotSaveNow is wired by main.js's boot() the same
+        // way __realotDirtyCheck is (see that comment above) — calls
         // the exact same Toolbar.js "Save Now" path a manual click
         // would, so the toast's button behaves identically to using
         // the real button.
         try {
-          if (typeof window.__vaelisSaveNow === "function") window.__vaelisSaveNow();
+          if (typeof window.__realotSaveNow === "function") window.__realotSaveNow();
         } catch (_) {}
       });
     }
-    var dismissBtn = document.getElementById("vaelis-recovery-toast-dismiss");
+    var dismissBtn = document.getElementById("realot-recovery-toast-dismiss");
     if (dismissBtn) {
       dismissBtn.addEventListener("click", function () {
         if (el.parentNode) el.parentNode.removeChild(el);
@@ -158,8 +158,8 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     // cache-busting reload in reload() above still runs on a real
     // module-load failure — this function just no longer takes over the
     // screen on top of it. Errors are still visible in the editor's own
-    // console panel via window.__vaelisEarlyLogs/ConsoleCapture.
-    console.error("Vaelis editor: a module failed to load after one automatic reload attempt. Leaving the current screen up rather than showing a blocking error screen.");
+    // console panel via window.__realotEarlyLogs/ConsoleCapture.
+    console.error("Realot editor: a module failed to load after one automatic reload attempt. Leaving the current screen up rather than showing a blocking error screen.");
   }
   function handleError(msg) {
     if (!msg) return;
@@ -192,128 +192,55 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
   }, 10000);
 })();
 </script>
+<link rel="preload" as="image" href="icons/realot-boot.jpg">
 <style>
-  /* Cinematic first-load screen. Pure inline CSS (no external
-     dependency, no wait on editor.css/main.js) so it paints
-     immediately — before PIXI/JSZip/Hammer's blocking script tags
-     in <head> have even finished downloading, which is normally
-     where most of the ~10s cold-cache delay on a project's very
-     first open comes from. Faded out (see the script at the bottom
-     of <body>) the moment main.js's first render() actually
-     populates #app — instant on every load after the first, since
-     the browser cache makes the local vendor scripts near-free the second
-     time around. */
-  #vaelis-boot-screen {
+  html, body { background: #000; }
+  /* First-load screen: pure black, the Realot Studio logo image fills the
+     whole screen, and a thin progress bar sits at the bottom. No glow, no
+     pulsing, no text. Inline CSS so it paints before any script loads. */
+  #realot-boot-screen {
     position: fixed; inset: 0; z-index: 999999;
-    display: flex; align-items: center; justify-content: center;
-    background:
-      radial-gradient(circle at 30% 20%, rgba(212,175,106,0.07), transparent 55%),
-      radial-gradient(circle at 75% 80%, rgba(212,175,106,0.05), transparent 50%),
-      #07070b;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000;
+    overflow: hidden;
     transition: opacity 0.5s ease, visibility 0.5s ease;
   }
-  #vaelis-boot-screen.zbs-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-  .zbs-inner { display: flex; flex-direction: column; align-items: center; gap: 26px; }
-
-  /* Logo: soft ambient glow behind it, plus a slow living
-     breathe (scale+brightness) so the frame never looks static
-     even during a long cold-cache load. */
-  .zbs-mark {
-    width: 260px; height: auto; position: relative;
-    display: flex; align-items: center; justify-content: center;
+  #realot-boot-screen.zbs-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .zbs-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block; user-select: none; -webkit-user-drag: none;
   }
-  .zbs-mark::before {
-    content: '';
-    position: absolute; left: 50%; top: 50%;
-    width: 360px; height: 360px;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(110,120,255,0.35), rgba(120,60,255,0.12) 45%, transparent 70%);
-    filter: blur(18px);
-    animation: zbs-glow-pulse 3.2s ease-in-out infinite;
-    z-index: 0;
+  /* Tall/narrow screens (phones in portrait): show the whole logo instead of
+     cropping its sides, and fade the picture's edges into the black. */
+  @media (max-aspect-ratio: 1/1) {
+    .zbs-img {
+      object-fit: contain;
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, transparent 100%);
+              mask-image: radial-gradient(ellipse at center, #000 55%, transparent 100%);
+    }
   }
-  .zbs-mark img {
-    position: relative; z-index: 1;
-    width: 100%; height: auto; display: block;
-    filter: drop-shadow(0 0 18px rgba(130,110,255,0.45));
-    animation: zbs-breathe 3.2s ease-in-out infinite;
-  }
-  @keyframes zbs-breathe {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 14px rgba(130,110,255,0.35)) brightness(1); }
-    50%      { transform: scale(1.035); filter: drop-shadow(0 0 26px rgba(150,130,255,0.6)) brightness(1.12); }
-  }
-  @keyframes zbs-glow-pulse {
-    0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); }
-    50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
-  }
-
-  .zbs-sub {
-    font-size: 12px; color: #9a9aac; text-align: center;
-    min-height: 16px; letter-spacing: 0.04em;
-  }
-
-  /* Real progress bar: driven by JS (zbs-fill's width is set
-     directly), not a decorative sweep. A subtle sweep highlight
-     still runs on top so it reads as alive at both 0% and 100%. */
   .zbs-bar {
-    width: 240px; height: 4px; border-radius: 4px;
-    background: rgba(255,255,255,0.08); overflow: hidden; position: relative;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    position: absolute; left: 50%; bottom: 6vh; transform: translateX(-50%);
+    width: min(420px, 60vw); height: 3px;
+    background: #1a1a1a; overflow: hidden;
   }
   .zbs-bar-fill {
-    height: 100%; width: 0%; border-radius: 4px;
-    background: linear-gradient(90deg, #6e78ff, #b47cff);
-    box-shadow: 0 0 10px rgba(150,120,255,0.7);
+    height: 100%; width: 0%;
+    background: #d4d4d4;
     transition: width 0.35s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .zbs-bar-fill::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
-    width: 60%;
-    animation: zbs-sweep 1.3s ease-in-out infinite;
-  }
-  @keyframes zbs-sweep {
-    0%   { transform: translateX(-120%); }
-    100% { transform: translateX(220%); }
-  }
-  .zbs-pct {
-    font-size: 11px; color: #6e78ff; letter-spacing: 0.08em;
-    font-variant-numeric: tabular-nums;
   }
 </style>
 </head>
 <body>
-  <div id="vaelis-boot-screen">
-    <div class="zbs-inner">
-      <div class="zbs-mark">
-        <img src="icons/boot-logo.jpg" alt="Vaelis" />
-      </div>
-      <div class="zbs-bar"><div class="zbs-bar-fill" id="zbs-fill"></div></div>
-      <div class="zbs-pct" id="zbs-pct">0%</div>
-      <div class="zbs-sub" id="zbs-status">Loading project&hellip;</div>
-    </div>
+  <div id="realot-boot-screen">
+    <img class="zbs-img" src="icons/realot-boot.jpg" alt="Realot Studio" draggable="false" />
+    <div class="zbs-bar"><div class="zbs-bar-fill" id="zbs-fill"></div></div>
   </div>
   <div id="app"></div>
   <script>
-  // Cycles a few status lines so the first (slowest) load reads as
-  // active progress rather than a stalled screen. Purely cosmetic —
-   // doesn't reflect real load stages, since the underlying local vendor
-   // files (PIXI/JSZip/Hammer.js in <head>, Rapier's WASM initialized
-   // later on demand) don't expose granular progress events to hook
-  // into.
+  // Progress bar: no real load events are exposed (PIXI/JSZip/Hammer/Rapier),
+  // so it eases toward 90% and slows down; reveal() below snaps it to 100%.
   (function () {
-    var lines = ["Loading project\u2026", "Booting renderer\u2026", "Preparing scene\u2026", "Almost there\u2026"];
-    var i = 0;
-    var el = document.getElementById("zbs-status");
-    window.__vaelisBootInterval = setInterval(function () {
-      i = (i + 1) % lines.length;
-      if (el) el.textContent = lines[i];
-    }, 1800);
-
     // Progress bar has no real granular signal to hook into (see
     // note above about PIXI/JSZip/Hammer/Rapier not exposing load
     // events), so it eases toward 90% and asymptotically slows,
@@ -321,14 +248,12 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     // actually has content — reads as genuine progress either way,
     // fast or slow.
     var fill = document.getElementById("zbs-fill");
-    var pct = document.getElementById("zbs-pct");
     var current = 0;
-    window.__vaelisBootProgress = setInterval(function () {
+    window.__realotBootProgress = setInterval(function () {
       var remaining = 90 - current;
       current += Math.max(remaining * 0.06, 0.15);
       if (current > 90) current = 90;
       if (fill) fill.style.width = current + "%";
-      if (pct) pct.textContent = Math.round(current) + "%";
     }, 120);
   })();
   </script>
@@ -340,15 +265,12 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
   // either way instead of guessing a duration.
   (function () {
     var app = document.getElementById("app");
-    var boot = document.getElementById("vaelis-boot-screen");
+    var boot = document.getElementById("realot-boot-screen");
     if (!app || !boot) return;
     function reveal() {
-      clearInterval(window.__vaelisBootInterval);
-      clearInterval(window.__vaelisBootProgress);
+      clearInterval(window.__realotBootProgress);
       var fill = document.getElementById("zbs-fill");
-      var pct = document.getElementById("zbs-pct");
       if (fill) fill.style.width = "100%";
-      if (pct) pct.textContent = "100%";
       boot.classList.add("zbs-hidden");
       setTimeout(function () {
         if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
@@ -383,7 +305,7 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     }
     var text = "ERROR: " + ((e.error && e.error.stack) || e.message || JSON.stringify(e));
     console.error(text);
-    window.__vaelisEarlyLogs("error", text);
+    window.__realotEarlyLogs("error", text);
     // Show a small non-blocking toast
 
   });
@@ -395,7 +317,7 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     }
     var text = "REJECTION: " + ((e.reason && (e.reason.stack || e.reason.message || e.reason.toString())) || JSON.stringify(e.reason));
     console.error(text);
-    window.__vaelisEarlyLogs("error", text);
+    window.__realotEarlyLogs("error", text);
 
   });
   // Check if PIXI loaded — log to console, don't block the screen
@@ -403,7 +325,7 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
     if (typeof PIXI === "undefined") {
        var msg = "PIXI is undefined - local vendor script failed to load";
       console.error(msg);
-      window.__vaelisEarlyLogs("error", msg);
+      window.__realotEarlyLogs("error", msg);
 
     }
   }, 3000);
@@ -418,7 +340,7 @@ window.__vaelisDirtyCheck = null; // set by main.js once EditorState.js has load
       // If main.js itself fails to load, log it — the auto-recovery
       // handler above will trigger a cache-busting reload.
       console.error("Failed to load editor main.js:", err);
-      window.__vaelisEarlyLogs("error", "Failed to load editor main.js: " + (err && err.message ? err.message : err));
+      window.__realotEarlyLogs("error", "Failed to load editor main.js: " + (err && err.message ? err.message : err));
     });
   </script>
 </body>

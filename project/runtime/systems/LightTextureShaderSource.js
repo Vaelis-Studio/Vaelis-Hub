@@ -905,7 +905,7 @@ export function buildLightTextureFilter(gl) {
   };
 
   const filter = new PIXI.Filter(VERTEX_SRC, FRAGMENT_SRC, uniforms);
-  filter.resolution = (window.__vaelisPixiApp && window.__vaelisPixiApp.renderer && window.__vaelisPixiApp.renderer.resolution) || Math.min(2, window.devicePixelRatio || 1);
+  filter.resolution = (window.__realotPixiApp && window.__realotPixiApp.renderer && window.__realotPixiApp.renderer.resolution) || Math.min(2, window.devicePixelRatio || 1);
   filter.autoFit = false;
   filter.lightingCaps = caps;
   return filter;

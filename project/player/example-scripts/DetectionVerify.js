@@ -1,5 +1,5 @@
 /**
- * DetectionVerify.js — drop-in Vaelis script
+ * DetectionVerify.js — drop-in Realot script
  *
  * Proves grounded / isOnCeiling / isOnWall / isOnSlope / groundAngle
  * are ACTUALLY working, using the on-screen debug HUD (not just

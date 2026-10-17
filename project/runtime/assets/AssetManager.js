@@ -87,8 +87,8 @@ function buildMissingTexture() {
 
 function generateTextureFromGraphics(graphics, fallback) {
   try {
-    if (!window.__vaelisPixiApp) return fallback;
-    const generated = window.__vaelisPixiApp.renderer.generateTexture(graphics);
+    if (!window.__realotPixiApp) return fallback;
+    const generated = window.__realotPixiApp.renderer.generateTexture(graphics);
     return generated || fallback;
   } catch (err) {
     return fallback;

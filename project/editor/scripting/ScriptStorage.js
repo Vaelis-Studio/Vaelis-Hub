@@ -10,7 +10,7 @@
  * EDITOR-ONLY FILE.
  */
 
-const STORAGE_KEY = "vaelis_scripts";
+const STORAGE_KEY = "realot_scripts";
 
 /** @type {Map<string, string>} scriptName -> source */
 let _cache = null;

@@ -36,7 +36,7 @@ import { markDirty } from "./EditorState.js";
 
 export const LAYER_COUNT = 16;
 
-const STORAGE_KEY = "vaelis_physics_layers";
+const STORAGE_KEY = "realot_physics_layers";
 
 /** Returns the default 16-element name array (only slot 0 is pre-named). */
 function _defaults() {

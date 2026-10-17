@@ -5,7 +5,7 @@
  * region is small enough to fully re-render on change.
  */
 (function () {
-    const { mount, refreshIcons, el } = window.VaelisDom;
+    const { mount, refreshIcons, el } = window.RealotDom;
 
     const titlebarRoot = document.getElementById('titlebar-root');
     const railRoot = document.getElementById('rail-root');
@@ -14,20 +14,20 @@
     const modalRoot = document.getElementById('modal-root');
 
     function renderAll() {
-        mount(titlebarRoot, window.VaelisTitlebar.render());
-        mount(railRoot, window.VaelisRail.render());
-        mount(topbarRoot, window.VaelisTopbar.render());
+        mount(titlebarRoot, window.RealotTitlebar.render());
+        mount(railRoot, window.RealotRail.render());
+        mount(topbarRoot, window.RealotTopbar.render());
 
-        const state = window.VaelisStore.getState();
-        const inner = el('div', { class: 'view-inner' }, [window.VaelisRouter.resolve(state.view)]);
+        const state = window.RealotStore.getState();
+        const inner = el('div', { class: 'view-inner' }, [window.RealotRouter.resolve(state.view)]);
         mount(viewRoot, inner);
 
-        mount(modalRoot, window.VaelisNewProjectModal.render());
+        mount(modalRoot, window.RealotNewProjectModal.render());
 
         refreshIcons();
     }
 
-    window.VaelisStore.subscribe(renderAll);
-    if (window.VaelisPWA) window.VaelisPWA.subscribe(renderAll);
+    window.RealotStore.subscribe(renderAll);
+    if (window.RealotPWA) window.RealotPWA.subscribe(renderAll);
     renderAll();
 })();

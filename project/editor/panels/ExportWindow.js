@@ -226,7 +226,7 @@ function renderAndroidServerPanel() {
   if (servers.length === 0 && !editorState.androidServerFormOpen) {
     body =
       '<div style="font-size:10.5px;color:#8a93a0;margin-bottom:8px;line-height:1.5;">' +
-      "The editor can't compile APKs itself \u2014 Android builds run on the Vaelis APK service. " +
+      "The editor can't compile APKs itself \u2014 Android builds run on the Realot APK service. " +
       "Add the server URL and your API key to get started." +
       "</div>" +
       renderApiKeyHelp() +
@@ -384,7 +384,7 @@ function renderResult(status) {
       '<div style="margin-top:10px;padding:8px 10px;background:#2a2410;border:1px solid #5a4a1a;border-radius:5px;font-size:10.5px;color:#e0c878;line-height:1.5;">' +
       icon("alerttriangle", 12) + " " +
       "Don't just double-click index.html \u2014 opening it directly from your files (file://) will show a blank or broken page in every browser, since the game's own module scripts and asset requests need a real http:// server to load. " +
-      "Either upload this whole folder to a static host (itch.io, GitHub Pages, Vercel, Netlify all work), or run a local server on it first (e.g. <code style=\"background:#1a1710;padding:1px 4px;border-radius:3px;\">npx serve .</code> from inside the folder) and open the http://localhost address it gives you." +
+      "Either upload this whole folder to a static host (itch.io, GitHub Pages, Cloudflare Pages, Netlify all work), or run a local server on it first (e.g. <code style=\"background:#1a1710;padding:1px 4px;border-radius:3px;\">npx serve .</code> from inside the folder) and open the http://localhost address it gives you." +
       "</div>"
     )) +
     (isAndroid ? "" : (editorState.lastWebExport && getActiveAndroidServer()

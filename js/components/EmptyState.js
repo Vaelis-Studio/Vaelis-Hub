@@ -3,12 +3,12 @@
  * Reusable centered empty/zero-result state with concentric rings
  * motif (echoes the engine's camera-gizmo/lighting-cone visuals).
  */
-window.VaelisEmptyState = {
+window.RealotEmptyState = {
     /**
      * @param {{icon:string,title:string,desc:string,actionLabel?:string,onAction?:Function}} opts
      */
     render({ icon, title, desc, actionLabel, onAction }) {
-        const { el } = window.VaelisDom;
+        const { el } = window.RealotDom;
 
         const children = [
             el('div', { class: 'empty-rings' }, [

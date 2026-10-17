@@ -490,7 +490,7 @@ export class ScriptSystem {
 
   /**
    * Compiles user source into a factory function. The factory is called
-   * with Vaelis globals as parameters, and returns an object with
+   * with Realot globals as parameters, and returns an object with
    * whichever lifecycle handlers the user declared, PLUS every other
    * top-level function they wrote (see "CUSTOM FUNCTIONS" below).
    *
@@ -537,9 +537,9 @@ export class ScriptSystem {
       // still works even if a later edit briefly breaks compilation.
       this._scriptSources.set(scriptName, source);
 
-      // Vaelis scripts support an editor-only `x as Type` / `x as
+      // Realot scripts support an editor-only `x as Type` / `x as
       // (A, B)` cast hint (see runtime/scripting/CastSyntax.js) that's
-      // valid Vaelis script syntax but NOT valid JavaScript — `as`
+      // valid Realot script syntax but NOT valid JavaScript — `as`
       // isn't a JS keyword, so passing it straight to `new Function()`
       // below would throw a real SyntaxError the instant a script using
       // a cast actually ran. Blanking it out here (before any of the
@@ -634,7 +634,7 @@ export class ScriptSystem {
    * _compile() and don't need rediscovering here).
    *
    * DELIBERATELY SIMPLE: this is a regex scan, not a real parser —
-   * matches Vaelis's existing approach to source analysis (see
+   * matches Realot's existing approach to source analysis (see
    * ScriptHighlighting.js's comment on why a lexical scan was chosen
    * over a full parser). It only needs to catch the common, intended
    * case — a plain named function declaration at the top level of a

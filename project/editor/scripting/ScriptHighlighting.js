@@ -1,7 +1,7 @@
 /**
  * editor/scripting/ScriptHighlighting.js
  *
- * Custom semantic-ish highlighting for Vaelis scripts, layered on
+ * Custom semantic-ish highlighting for Realot scripts, layered on
  * top of Monaco's normal JavaScript tokenizer.
  *
  * Monaco's built-in JS grammar only knows generic token types
@@ -12,7 +12,7 @@
  * code) without pulling in a full TypeScript type-checker, this file
  * takes a simpler, reliable approach:
  *
- *   1. A custom theme (vaelis-dark) defines extra token colors on
+ *   1. A custom theme (realot-dark) defines extra token colors on
  *      top of vs-dark's normal palette.
  *   2. A lightweight regex/scan pass runs on every content change and
  *      re-applies Monaco decorations (`deltaDecorations`) that tag
@@ -21,7 +21,7 @@
  * This is intentionally NOT full semantic analysis — it's a curated
  * keyword-list match against the identifiers this engine actually
  * exposes (kept in sync with ScriptIntelliSense.js's own API tables).
- * That's enough to make Vaelis's own API visually pop against
+ * That's enough to make Realot's own API visually pop against
  * plain user code, which is the actual goal, without the cost/fragility
  * of a real type checker running in the browser.
  *
@@ -31,7 +31,7 @@
 // ─── Color tiers ────────────────────────────────────────────────────────────
 // 1. JavaScript keywords/built-ins → left completely alone, Monaco's normal
 //                                colors: if/for/function, Math/Math.floor/
-//                                JSON/Array/etc. never get a Vaelis
+//                                JSON/Array/etc. never get a Realot
 //                                color — they're plain JavaScript, not
 //                                something this engine provided, and
 //                                coloring them specially would make them
@@ -62,8 +62,8 @@ const ENGINE_GLOBALS = [
   "cancelWait", "repeat", "cancelRepeat", "tween", "cancelTween", "nav",
 ];
 
-// Vaelis's own mathx.<member> helpers — genuinely engine API, so
-// these stay on the same vaelis-token-member tier as .addForce/.keyDown/
+// Realot's own mathx.<member> helpers — genuinely engine API, so
+// these stay on the same realot-token-member tier as .addForce/.keyDown/
 // etc., kept in sync with MATH_API in ScriptIntelliSense.js.
 const MATHX_MEMBERS = ["lerp", "clamp", "moveToward", "remap", "approximately"];
 
@@ -79,7 +79,7 @@ const ENGINE_OBJECTS = [
   // Previously missing from this list (their MEMBERS were already
   // colored via ENGINE_MEMBERS below, e.g. this.state.current, but the
   // object name itself — state/ear/collider — never got the
-  // vaelis-token-object color the other this.<sub-object> names all get.
+  // realot-token-object color the other this.<sub-object> names all get.
   "state", "ear", "collider", "navAgent", "myTouch", "strokePath", "shadowCaster",
   // Joint (this.joint — see JointAPI.js). Was missing entirely: no
   // ENGINE_OBJECTS entry (this.joint itself stayed uncolored) and no
@@ -274,17 +274,17 @@ const ENGINE_MEMBERS = [
   "save", "keys", "slot", "listSlots", "deleteSlot", "flushNow", "onError", "isReady",
 ];
 
-const THEME_NAME = "vaelis-dark";
+const THEME_NAME = "realot-dark";
 
 let _themeDefined = false;
 let _decorationIds = {}; // scriptName -> string[] (last applied decoration ids for that model)
 
 /**
- * Defines the vaelis-dark theme once. Extends vs-dark's normal
+ * Defines the realot-dark theme once. Extends vs-dark's normal
  * palette (keywords, strings, comments, numbers all untouched) and
  * adds three extra token colors for our own classes.
  */
-export function defineVaelisTheme(monaco) {
+export function defineRealotTheme(monaco) {
   if (_themeDefined) return;
   monaco.editor.defineTheme(THEME_NAME, {
     base: "vs-dark",
@@ -296,27 +296,27 @@ export function defineVaelisTheme(monaco) {
       // cancelRepeat) — a warm gold, distinct from both keywords
       // (blue) and strings (orange), so they read as "this is a Thing
       // the engine gives you".
-      { token: "vaelis-global", foreground: "e0af68", fontStyle: "bold" },
+      { token: "realot-global", foreground: "e0af68", fontStyle: "bold" },
       // Engine objects (this.sprite, this.rigidbody, etc.) — teal,
       // visually a sibling of the gold globals but clearly a
       // different tier (per-entity, not top-level).
-      { token: "vaelis-object", foreground: "56c2c0", fontStyle: "bold" },
+      { token: "realot-object", foreground: "56c2c0", fontStyle: "bold" },
       // Engine methods/properties (.addForce, .keyDown, .position, ...)
       // — a soft, subtle lavender. Deliberately lower-contrast than
       // the two tiers above since these appear constantly and
       // shouldn't visually dominate every line that touches the API.
-      { token: "vaelis-member", foreground: "9d9dc7" },
+      { token: "realot-member", foreground: "9d9dc7" },
       // Script lifecycle callbacks — bright violet so the functions that
-      // Vaelis invokes automatically stand out from user functions.
-      { token: "vaelis-lifecycle", foreground: "c586c0", fontStyle: "bold" },
+      // Realot invokes automatically stand out from user functions.
+      { token: "realot-lifecycle", foreground: "c586c0", fontStyle: "bold" },
       // The `as` cast keyword — same blue family as JS keywords (it
       // behaves like one in scripts) but italic to mark it as a
-      // Vaelis-specific addition rather than real JavaScript.
-      { token: "vaelis-cast-keyword", foreground: "569cd6", fontStyle: "italic bold" },
+      // Realot-specific addition rather than real JavaScript.
+      { token: "realot-cast-keyword", foreground: "569cd6", fontStyle: "italic bold" },
       // Cast-target type names (DynamicBody, Animator, SpotLight, …) —
       // a distinct green, the same tier as a type annotation would get
       // in a typed language, since that's exactly what these are.
-      { token: "vaelis-cast-type", foreground: "4ec9b0", fontStyle: "bold" },
+      { token: "realot-cast-type", foreground: "4ec9b0", fontStyle: "bold" },
     ],
     colors: {},
   });
@@ -325,7 +325,7 @@ export function defineVaelisTheme(monaco) {
 
 /**
  * Scans `model`'s current text for engine identifiers and applies
- * Monaco decorations with the matching vaelis-* CSS class. Called on
+ * Monaco decorations with the matching realot-* CSS class. Called on
  * every content change (debounced by the caller) and on tab switch.
  *
  * Approach: three passes with word-boundary regexes built from the
@@ -346,7 +346,7 @@ export function defineVaelisTheme(monaco) {
  * across Monaco versions: model.getLineTokens() is not part of the public
  * ITextModel API in the Monaco build used by this project.
  */
-export function applyVaelisDecorations(monaco, editorInstance, model, scriptName) {
+export function applyRealotDecorations(monaco, editorInstance, model, scriptName) {
   if (!monaco || !editorInstance || !model) return;
   // Guard against a stale scheduled call landing after the editor/model
   // was disposed (e.g. the editor window was closed while a debounced
@@ -377,7 +377,7 @@ export function applyVaelisDecorations(monaco, editorInstance, model, scriptName
   // under leftover decorations calculated for a different, no-longer-
   // visible script's text. Bail out here (silently — the tab switch
   // itself already triggered its own immediate, non-debounced
-  // applyVaelisDecorations call in _switchTab, so this script's coloring
+  // applyRealotDecorations call in _switchTab, so this script's coloring
   // is already correct and doesn't need this stale pass at all).
   try {
     if (editorInstance.getModel && editorInstance.getModel() !== model) return;
@@ -467,38 +467,38 @@ export function applyVaelisDecorations(monaco, editorInstance, model, scriptName
   }
 
   const globalsPattern = "\\b(" + ENGINE_GLOBALS.join("|") + ")\\b";
-  addMatches(new RegExp(globalsPattern, "g"), "vaelis-token-global");
+  addMatches(new RegExp(globalsPattern, "g"), "realot-token-global");
 
   const objectsPattern = "(?:\\bthis\\.|\\.)(" + ENGINE_OBJECTS.join("|") + ")\\b";
-  addMatches(new RegExp(objectsPattern, "g"), "vaelis-token-object");
+  addMatches(new RegExp(objectsPattern, "g"), "realot-token-object");
 
   const membersPattern = "\\.(" + ENGINE_MEMBERS.join("|") + ")\\b";
-  addMatches(new RegExp(membersPattern, "g"), "vaelis-token-member");
+  addMatches(new RegExp(membersPattern, "g"), "realot-token-member");
 
   // this.rigidbody.type / someEntity.rigidbody.type — "type" is deliberately
   // left OUT of ENGINE_MEMBERS above (too generic, would light up any
   // object's own .type field), but this.rigidbody.type specifically is a
-  // real, writable Vaelis API member (see RigidbodyAPI.js's `type`
+  // real, writable Realot API member (see RigidbodyAPI.js's `type`
   // setter), so it gets its own narrowly-scoped pattern: only matched
   // directly after ".rigidbody.", never as a bare ".type".
   const rigidbodyTypePattern = "\\.rigidbody\\s*\\.\\s*(type)\\b";
-  addMatches(new RegExp(rigidbodyTypePattern, "g"), "vaelis-token-member");
+  addMatches(new RegExp(rigidbodyTypePattern, "g"), "realot-token-member");
 
   const lifecyclePattern = "\\b(" + ENGINE_LIFECYCLE.join("|") + ")\\b";
-  addMatches(new RegExp(lifecyclePattern, "g"), "vaelis-token-lifecycle");
+  addMatches(new RegExp(lifecyclePattern, "g"), "realot-token-lifecycle");
 
   // Native `Math`/`Math.<member>` are deliberately left UNCOLORED here —
-  // they're plain JavaScript, not Vaelis API, so they should read as
+  // they're plain JavaScript, not Realot API, so they should read as
   // ordinary code (same as Monaco's default JS tokenizer would already
   // show them), not draw attention as if they're something to learn
   // from this engine. `mathx.<member>` right below is the actual
-  // Vaelis-provided math API and stays colored.
+  // Realot-provided math API and stays colored.
 
   // mathx.<member> (lerp, clamp, moveToward, remap, approximately) — this
-  // IS Vaelis's own API, so it correctly stays on vaelis-token-member,
+  // IS Realot's own API, so it correctly stays on realot-token-member,
   // same tier as .addForce/.keyDown/etc. below.
   const mathxMembersPattern = "\\bmathx\\.(" + MATHX_MEMBERS.join("|") + ")\\b";
-  addMatches(new RegExp(mathxMembersPattern, "g"), "vaelis-token-member");
+  addMatches(new RegExp(mathxMembersPattern, "g"), "realot-token-member");
 
   // `as` cast keyword — only when it sits between an identifier/`)` and
   // either another identifier or an opening `(`, i.e. actually being used
@@ -506,14 +506,14 @@ export function applyVaelisDecorations(monaco, editorInstance, model, scriptName
   // an unrelated word (word-boundary already prevents that) or a comment/
   // string (codeMask already excludes those).
   const castKeywordPattern = "\\b(" + ENGINE_CAST_KEYWORD.join("|") + ")\\s+(?=[A-Za-z_(])";
-  addMatches(new RegExp(castKeywordPattern, "g"), "vaelis-token-cast-keyword");
+  addMatches(new RegExp(castKeywordPattern, "g"), "realot-token-cast-keyword");
 
   // Cast-target type names — matched only right after `as` / `as (` / a
   // comma inside an `as ( … )` list, so a same-named user identifier
   // elsewhere in the file is never miscolored.
   const castTypesAlt = ENGINE_CAST_TYPES.join("|");
   const castTypePattern = "\\bas\\s*\\(?\\s*(?:(?:" + castTypesAlt + ")\\s*,\\s*)*(" + castTypesAlt + ")\\b";
-  addMatches(new RegExp(castTypePattern, "g"), "vaelis-token-cast-type");
+  addMatches(new RegExp(castTypePattern, "g"), "realot-token-cast-type");
 
   // Applying decorations is wrapped defensively: this runs off a
   // debounced setTimeout (see ScriptEditorWindow.js), so an uncaught
@@ -529,7 +529,7 @@ export function applyVaelisDecorations(monaco, editorInstance, model, scriptName
     const prevIds = _decorationIds[scriptName] || [];
     _decorationIds[scriptName] = editorInstance.deltaDecorations(prevIds, decorations);
   } catch (e) {
-    console.warn("[Vaelis Highlighting] decoration pass failed for '" + scriptName + "':", e);
+    console.warn("[Realot Highlighting] decoration pass failed for '" + scriptName + "':", e);
   }
 }
 
@@ -537,7 +537,7 @@ export function applyVaelisDecorations(monaco, editorInstance, model, scriptName
  * Drops cached decoration ids for a script — call when a tab/model is
  * disposed so deltaDecorations isn't handed stale ids on next open.
  */
-export function clearVaelisDecorations(scriptName) {
+export function clearRealotDecorations(scriptName) {
   delete _decorationIds[scriptName];
 }
 
@@ -553,7 +553,7 @@ export function clearVaelisDecorations(scriptName) {
  * _models but not this would leave _decorationIds[oldName] holding
  * decoration ids nothing will ever clear (that key is never touched
  * again post-rename), while _decorationIds[newName] starts fresh
- * (empty array), so the NEXT applyVaelisDecorations() call for the
+ * (empty array), so the NEXT applyRealotDecorations() call for the
  * renamed script does deltaDecorations([], newDecorations) — adding
  * new decorations on top of the still-attached old ones instead of
  * replacing them, since deltaDecorations only removes the ids it's
@@ -561,10 +561,10 @@ export function clearVaelisDecorations(scriptName) {
  * model's (still-live, just renamed) text positions — so typing new
  * content, or deleting everything down to a few characters, leaves
  * old decoration ranges sitting on whatever text is left, including
- * old vaelis-token-lifecycle purple. That's the exact "rename then type
+ * old realot-token-lifecycle purple. That's the exact "rename then type
  * and everything's purple" bug this fixes.
  */
-export function renameVaelisDecorations(oldName, newName) {
+export function renameRealotDecorations(oldName, newName) {
   if (_decorationIds[oldName]) {
     _decorationIds[newName] = _decorationIds[oldName];
     delete _decorationIds[oldName];
@@ -574,16 +574,16 @@ export function renameVaelisDecorations(oldName, newName) {
 // Inject the CSS classes the decorations above reference. Monaco's
 // inlineClassName only takes effect if the class actually exists in
 // the page's stylesheet — these three lines are that stylesheet.
-(function injectVaelisTokenCSS() {
-  if (document.getElementById("vaelis-token-css")) return;
+(function injectRealotTokenCSS() {
+  if (document.getElementById("realot-token-css")) return;
   var style = document.createElement("style");
-  style.id = "vaelis-token-css";
+  style.id = "realot-token-css";
   style.textContent =
-    ".vaelis-token-global{color:#e0af68!important;font-weight:600;}" +
-    ".vaelis-token-object{color:#56c2c0!important;font-weight:600;}" +
-    ".vaelis-token-member{color:#9d9dc7!important;}" +
-    ".vaelis-token-lifecycle{color:#c586c0!important;font-weight:600;}" +
-    ".vaelis-token-cast-keyword{color:#569cd6!important;font-style:italic;font-weight:600;}" +
-    ".vaelis-token-cast-type{color:#4ec9b0!important;font-weight:600;}";
+    ".realot-token-global{color:#e0af68!important;font-weight:600;}" +
+    ".realot-token-object{color:#56c2c0!important;font-weight:600;}" +
+    ".realot-token-member{color:#9d9dc7!important;}" +
+    ".realot-token-lifecycle{color:#c586c0!important;font-weight:600;}" +
+    ".realot-token-cast-keyword{color:#569cd6!important;font-style:italic;font-weight:600;}" +
+    ".realot-token-cast-type{color:#4ec9b0!important;font-weight:600;}";
   document.head.appendChild(style);
 })();

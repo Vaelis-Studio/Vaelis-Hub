@@ -4,19 +4,19 @@
  * tag, and last-opened time. Clicking the row opens the project in the
  * editor; the trash action deletes it from the launcher. The pencil
  * action swaps the name label for an inline text input (rename mode is
- * tracked in VaelisStore.state.renamingProjectId so only one card edits
+ * tracked in RealotStore.state.renamingProjectId so only one card edits
  * at a time and re-renders cleanly).
  */
-window.VaelisProjectCard = {
+window.RealotProjectCard = {
     render(project) {
-        const { el } = window.VaelisDom;
-        const isRenaming = window.VaelisStore.getState().renamingProjectId === project.id;
+        const { el } = window.RealotDom;
+        const isRenaming = window.RealotStore.getState().renamingProjectId === project.id;
 
         const thumb = el('div', { class: 'project-thumb' }, [
             el('span', { html: '<svg data-lucide="image"></svg>' })
         ]);
 
-        const commitRename = (inputEl) => window.VaelisStore.renameProject(project.id, inputEl.value);
+        const commitRename = (inputEl) => window.RealotStore.renameProject(project.id, inputEl.value);
 
         const nameNode = isRenaming
             ? el('input', {
@@ -28,7 +28,7 @@ window.VaelisProjectCard = {
                 onKeydown: (e) => {
                     e.stopPropagation();
                     if (e.key === 'Enter') { e.preventDefault(); commitRename(e.target); }
-                    else if (e.key === 'Escape') { e.preventDefault(); window.VaelisStore.cancelRename(); }
+                    else if (e.key === 'Escape') { e.preventDefault(); window.RealotStore.cancelRename(); }
                 },
                 onBlur: (e) => commitRename(e.target)
             })
@@ -44,7 +44,7 @@ window.VaelisProjectCard = {
             el('span', { class: 'tag' }, [project.platform])
         ]);
 
-        const opened = el('div', { class: 'project-opened' }, [window.VaelisFormat.timeAgo(project.lastOpened)]);
+        const opened = el('div', { class: 'project-opened' }, [window.RealotFormat.timeAgo(project.lastOpened)]);
 
         const renameBtn = el('button', {
             class: 'btn btn-icon',
@@ -52,7 +52,7 @@ window.VaelisProjectCard = {
             'aria-label': 'Rename project',
             onClick: (e) => {
                 e.stopPropagation();
-                window.VaelisStore.startRename(project.id);
+                window.RealotStore.startRename(project.id);
             }
         }, [el('span', { html: '<svg data-lucide="edit-3"></svg>' })]);
 
@@ -63,14 +63,14 @@ window.VaelisProjectCard = {
             onClick: (e) => {
                 e.stopPropagation();
                 if (confirm('Delete "' + project.name + '"? This removes it from your projects.')) {
-                    window.VaelisStore.deleteProject(project.id);
+                    window.RealotStore.deleteProject(project.id);
                 }
             }
         }, [el('span', { html: '<svg data-lucide="trash-2"></svg>' })]);
 
         const actions = el('div', { class: 'project-row-actions' }, [renameBtn, delBtn]);
 
-        const openProject = () => window.VaelisNav.openEditor(project);
+        const openProject = () => window.RealotNav.openEditor(project);
 
         const row = el('div', {
             class: 'project-row',

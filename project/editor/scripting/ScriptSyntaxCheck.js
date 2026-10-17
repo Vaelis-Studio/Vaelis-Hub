@@ -7,7 +7,7 @@
  * broken script actually ran (see ScriptEditorWindow.js's
  * noSyntaxValidation: true comment, which this file's caller flips).
  *
- * THE `as` PROBLEM: Vaelis scripts support an editor-only cast hint
+ * THE `as` PROBLEM: Realot scripts support an editor-only cast hint
  * (`const body = enemy as DynamicBody;` — see
  * runtime/scripting/CastSyntax.js) that is NOT valid JavaScript. Monaco's
  * own JS/TS worker parses real JavaScript, so pointing it directly at a
@@ -32,7 +32,7 @@
 
 import { stripCastSyntax } from "../../runtime/scripting/CastSyntax.js";
 
-const SYNTAX_OWNER = "vaelis-js-syntax";
+const SYNTAX_OWNER = "realot-js-syntax";
 
 // scriptName -> shadow ITextModel. One shadow per open tab, disposed
 // alongside the real model in ScriptEditorWindow.js's _closeTab.
@@ -54,7 +54,7 @@ function _getOrCreateShadow(monaco, scriptName, strippedText) {
     if (shadow.getValue() !== strippedText) shadow.setValue(strippedText);
     return shadow;
   }
-  const uri = monaco.Uri.parse("inmemory://vaelis-syntax-shadow/" + _shadowSeq++ + "-" + encodeURIComponent(scriptName) + ".js");
+  const uri = monaco.Uri.parse("inmemory://realot-syntax-shadow/" + _shadowSeq++ + "-" + encodeURIComponent(scriptName) + ".js");
   shadow = monaco.editor.createModel(strippedText, "javascript", uri);
   _shadowModels.set(scriptName, shadow);
   return shadow;
@@ -69,7 +69,7 @@ function _getOrCreateShadow(monaco, scriptName, strippedText) {
  *
  * Semantic validation (name resolution, "Property does not exist", etc)
  * is deliberately NOT requested here — only getSyntacticDiagnostics.
- * Vaelis scripts reference dozens of engine-injected globals
+ * Realot scripts reference dozens of engine-injected globals
  * (this.rigidbody, nav, find(), …) that no static analysis of a single
  * file can ever resolve, so semantic checking would be false-positive
  * noise, not real bugs. Syntax errors (a parse failure) are a much
@@ -125,7 +125,7 @@ export function refreshSyntaxCheck(monaco, model, scriptName) {
       // Never let a worker hiccup (e.g. the JS worker script failing to
           // load, same class of local vendor failure _reportMonacoLoadFailure
           // already guards against elsewhere) break the editor.
-      console.warn("[Vaelis] live syntax check failed:", e);
+      console.warn("[Realot] live syntax check failed:", e);
     });
 }
 
@@ -141,7 +141,7 @@ function _flattenDiagnosticMessage(messageText) {
 }
 
 /** Migrate a script's shadow model to a new key after a rename — same
- *  spirit as ScriptHighlighting.js's renameVaelisDecorations(), called
+ *  spirit as ScriptHighlighting.js's renameRealotDecorations(), called
  *  from the same renameScriptEverywhere() flow in ScriptEditorWindow.js.
  *  Without this, a rename would silently orphan (leak) the old shadow
  *  model rather than reusing it under the new name. */

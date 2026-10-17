@@ -4,17 +4,17 @@
  * Not a URL router — this launcher has no navigable history, just
  * in-memory tab state, so this simply resolves state.view -> component.
  */
-window.VaelisRouter = {
+window.RealotRouter = {
     resolve(view) {
         switch (view) {
             case 'projects':
-                return window.VaelisProjectList.render();
+                return window.RealotProjectList.render();
             case 'learn':
-                return window.VaelisLearnView.render();
+                return window.RealotLearnView.render();
             case 'installs':
-                return window.VaelisInstallsView.render();
+                return window.RealotInstallsView.render();
             default:
-                return window.VaelisProjectList.render();
+                return window.RealotProjectList.render();
         }
     }
 };

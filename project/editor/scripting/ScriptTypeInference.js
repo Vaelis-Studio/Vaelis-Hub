@@ -1,7 +1,7 @@
 /**
  * editor/scripting/ScriptTypeInference.js
  *
- * Lightweight, regex-based type tracking for Vaelis script
+ * Lightweight, regex-based type tracking for Realot script
  * autocomplete. This is NOT a real type checker — same philosophy as
  * ScriptIntelliSense.js's other "parse enough of the surrounding text
  * to be useful" helpers (_parseFindVariables, _parseRaycastVariables,

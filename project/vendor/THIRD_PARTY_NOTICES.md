@@ -1,6 +1,6 @@
 # Bundled browser dependencies
 
-Vaelis includes the browser dependencies it needs so the launcher, editor,
+Realot includes the browser dependencies it needs so the launcher, editor,
 player, physics runtime, and script editor can run without a network request.
 
 | Dependency | Version | Local path | License |

@@ -340,8 +340,8 @@ async function loadInitialProject(render) {
   try {
     let snapshot = await loadProjectSnapshot(identity.id, game);
     let seededFromTemplate = false;
-    if (!snapshot && identity.templateId && window.VaelisTemplateData && window.VaelisTemplateData[identity.templateId]) {
-      snapshot = window.VaelisTemplateData[identity.templateId];
+    if (!snapshot && identity.templateId && window.RealotTemplateData && window.RealotTemplateData[identity.templateId]) {
+      snapshot = window.RealotTemplateData[identity.templateId];
       await applySnapshot(game, snapshot);
       seededFromTemplate = true;
     }
@@ -448,7 +448,7 @@ function createViewport(mount, render) {
     catch (_) { /* fall through to null stub */ }
     // Stage 3: No renderer available — log and leave pixiApp null.
     _pixiInitFailed = true;
-    console.warn("[Vaelis] No PIXI renderer available (no WebGL or Canvas 2D). Scene viewport will be disabled.");
+    console.warn("[Realot] No PIXI renderer available (no WebGL or Canvas 2D). Scene viewport will be disabled.");
   })();
 
   if (!pixiApp) return; // bail out gracefully — editor UI still works
@@ -1613,9 +1613,9 @@ function attachDropTarget(mount) {
   // changes" indicator/reload guard.
   el.addEventListener("drop", (e) => {
     e.preventDefault();
-    const spriteKey = e.dataTransfer.getData("application/x-vaelis-sprite-key");
-    const audioKey = e.dataTransfer.getData("application/x-vaelis-audio-key");
-    const prefabId = e.dataTransfer.getData("application/x-vaelis-prefab-id");
+    const spriteKey = e.dataTransfer.getData("application/x-realot-sprite-key");
+    const audioKey = e.dataTransfer.getData("application/x-realot-audio-key");
+    const prefabId = e.dataTransfer.getData("application/x-realot-prefab-id");
 
     if (prefabId && editorState.world) {
       const prefab = getPrefab(prefabId);

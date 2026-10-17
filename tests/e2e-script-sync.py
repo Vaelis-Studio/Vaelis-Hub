@@ -1,8 +1,8 @@
 """
-Imports a deliberately tampered .vs (stored script = B, the copy embedded in the
+Imports a deliberately tampered .rs (stored script = B, the copy embedded in the
 scene = stale) while the script editor is open on the old code, then checks the
 script editor, the scene components and PLAY all use B. Also writes
-/tmp/tampered.vs, which e2e-open-vs-file.py reuses.
+/tmp/tampered.rs, which e2e-open-rs-file.py reuses.
 Usage: python3 tests/e2e-script-sync.py http://127.0.0.1:8001 LABEL
 (needs the Monaco bundle in project/vendor/monaco-editor and playwright)
 """
@@ -41,7 +41,7 @@ with sync_playwright() as p:
         return False
     check("opened script editor on original project", open_editor())
     ed.wait_for_selector(".monaco-editor", timeout=60000); ed.wait_for_timeout(1500)
-    # save project -> .vs download
+    # save project -> .rs download
     ed.evaluate("document.querySelector('[data-action=\"toggle-menu\"][data-menu=\"file\"]')?.click()"); ed.wait_for_timeout(400)
     if not ed.query_selector('[data-action="save-project"]'):
         print("menus:", ed.evaluate("[...document.querySelectorAll('[data-action=toggle-menu]')].map(e=>e.dataset.menu)"))
@@ -66,10 +66,10 @@ with sync_playwright() as p:
         elif item.filename.startswith("scenes/") and item.filename.endswith(".json") and item.filename!="scenes/index.json":
             d=json.loads(data); stale(d); data=json.dumps(d).encode(); patched+=1
         zout.writestr(item, data)
-    zout.close(); open("/tmp/tampered.vs","wb").write(out.getvalue())
-    print("tampered .vs written; scene files patched:", patched)
+    zout.close(); open("/tmp/tampered.rs","wb").write(out.getvalue())
+    print("tampered .rs written; scene files patched:", patched)
     # import it while the script editor is still open on the OLD code
-    ed.set_input_files('[data-action="load-project-input"]', "/tmp/tampered.vs")
+    ed.set_input_files('[data-action="load-project-input"]', "/tmp/tampered.rs")
     for _ in range(40):   # the import is async (assets, scenes): wait until it has visibly finished
         ed.wait_for_timeout(500)
         done = ed.evaluate("async (n)=>{ const ss=await import('/project/editor/scripting/ScriptStorage.js'); const l=document.body.innerText||''; return /Loaded project|Project loaded|Loaded/i.test(l) || ss.getScriptSource(n).includes('STORAGE-B'); }", X)
@@ -98,8 +98,8 @@ with sync_playwright() as p:
     # Play: what does the game actually run?
     ed.evaluate("document.querySelector('[data-action=\"toggle-pause\"]') && 0")
     with ed.expect_popup(timeout=20000) as pop: ed.evaluate("document.querySelector('[data-action=toggle-play]').click()")
-    play = pop.value; play.wait_for_function("() => !!(window.__vaelisGame || window.__zengineGame)", timeout=30000); play.wait_for_timeout(2500)
-    ran = play.evaluate("""() => { const g = (window.__vaelisGame || window.__zengineGame); const seen = [];
+    play = pop.value; play.wait_for_function("() => !!(window.__realotGame || window.__zengineGame)", timeout=30000); play.wait_for_timeout(2500)
+    ran = play.evaluate("""() => { const g = (window.__realotGame || window.__zengineGame); const seen = [];
       const walk = (o, d) => { if (!o || d > 3 || typeof o !== 'object') return; for (const k of Object.keys(o)) { let v; try { v = o[k]; } catch(e) { continue; }
         if (v instanceof Map && k === '_scriptSources') for (const [n, s] of v) seen.push(n + '::' + s);
         else if (v && typeof v === 'object' && !(v instanceof Node)) walk(v, d + 1); } };

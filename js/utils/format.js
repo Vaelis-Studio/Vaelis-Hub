@@ -2,7 +2,7 @@
  * format.js
  * Display formatting helpers.
  */
-window.VaelisFormat = {
+window.RealotFormat = {
     /** Format a timestamp as a short relative "time ago" string. */
     timeAgo(timestamp) {
         const diffMs = Date.now() - timestamp;

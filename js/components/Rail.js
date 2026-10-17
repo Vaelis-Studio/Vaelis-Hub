@@ -2,19 +2,19 @@
  * Rail.js
  * Unity-Hub-style narrow icon rail for top-level section navigation.
  */
-window.VaelisRail = {
+window.RealotRail = {
     render() {
-        const { el } = window.VaelisDom;
-        const state = window.VaelisStore.getState();
+        const { el } = window.RealotDom;
+        const state = window.RealotStore.getState();
 
-        const items = window.VaelisIcons.rail.map(item => {
+        const items = window.RealotIcons.rail.map(item => {
             const isActive = state.view === item.id;
             return el('button', {
                 class: 'rail-item' + (isActive ? ' active' : ''),
                 title: item.label,
                 'aria-label': item.label,
                 'aria-current': isActive ? 'page' : null,
-                onClick: () => window.VaelisStore.setView(item.id)
+                onClick: () => window.RealotStore.setView(item.id)
             }, [el('span', { html: `<svg data-lucide="${item.icon}"></svg>` })]);
         });
 
